@@ -1,1 +1,0 @@
--wto "20f712f812e544eb90e9d7b0214d117d" --incr --debug "typical" --relax --mt "2" -L "xil_defaultlib" -L "TinyAVR" -L "secureip" --snapshot "TinyAVR_TB_behav" "xil_defaultlib.TinyAVR_TB" -log "elaborate.log" 

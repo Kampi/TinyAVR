@@ -59,7 +59,7 @@ architecture PM_Arch of PM is
         return ROM;
     end function;
 
-    signal Memory : ROM_t := InitRomFromFile("../../../../software/AVRASM/T-Test.hex");
+    signal Memory : ROM_t := InitRomFromFile("../../../../software/AVRASM/Arith-Test.hex");
 
 begin
 
