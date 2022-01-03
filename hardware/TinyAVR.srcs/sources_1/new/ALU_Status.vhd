@@ -40,9 +40,7 @@ entity ALU_Status is
             C           : in STD_LOGIC;                                 -- C flag from the ALU operation
             T           : in STD_LOGIC;                                 -- T flag from the ALU operation
             SREGIn      : in STD_LOGIC_VECTOR(7 downto 0);              -- SREG input
-            Set_Mask    : in Bit_Mask_t;                                -- Status register modification mask
-            Set_E       : in Write_Opt_t;                               -- Enable write of individual bits (used by BSET and BCLR)
-            Set         : in Set_Opt_t;                                 -- Status register set / clear option (used by BSET and BCLR)
+            Mask        : in Bit_Mask_t;                                -- Status register modification mask
             SREGOut     : out STD_LOGIC_VECTOR(7 downto 0)              -- Modified Status register output
             );
 end ALU_Status;
@@ -51,64 +49,56 @@ architecture ALU_Status_Arch of ALU_Status is
 
 begin
 
-    process(R, H, V, C, T, SREGIn, Set_Mask, Set_E, Set)
+    process(R, H, V, C, T, SREGIn, Mask)
         variable NFlag  : STD_LOGIC                     := '0';
         variable VFlag  : STD_LOGIC                     := '0';
         variable Status : STD_LOGIC_VECTOR(7 downto 0)  := (others => '0');
     begin
         Status := SREGIn;
-    
-        if(Set_E = '1') then
-            if(Set = OPT_SET) then
-                Status := SREGIn or Set_Mask;
+
+        -- Save the T Flag
+        if(Mask(STATUS_BIT_T) = '1') then
+            Status(STATUS_BIT_T) := T;
+        end if;
+
+        -- Save the C Flag from the ALU operation
+        if(Mask(STATUS_BIT_C) = '1') then
+            Status(STATUS_BIT_C) := C;
+        end if;
+                
+        -- Modify the Z Flag
+        if(Mask(STATUS_BIT_Z) = '1') then
+            if(R = STD_LOGIC_VECTOR(to_unsigned(0, R'length))) then
+                Status(STATUS_BIT_Z) := '1';
             else
-                Status := SREGIn and (not Set_Mask);
+                Status(STATUS_BIT_Z) := '0';
             end if;
+        end if;
+                
+        -- Modify the N Flag
+        if(Mask(STATUS_BIT_N) = '1') then
+            NFlag := R(R'length - 1);
+            Status(STATUS_BIT_N) := NFlag;
         else
-            -- Save the T Flag
-            if(Set_Mask(STATUS_BIT_T) = '1') then
-                Status(STATUS_BIT_T) := T;
-            end if;
+            NFlag := '0';
+        end if;
+                
+        -- Modify the V Flag
+        if(Mask(STATUS_BIT_V) = '1') then
+            VFlag := V;
+            Status(STATUS_BIT_V) := VFlag;
+        else 
+            VFlag := '0';
+         end if;
+                
+        -- Modify the S Flag
+        if(Mask(STATUS_BIT_S) = '1') then
+            Status(STATUS_BIT_S) := NFlag xor VFlag;
+        end if;
 
-            -- Save the C Flag from the ALU operation
-            if(Set_Mask(STATUS_BIT_C) = '1') then
-                Status(STATUS_BIT_C) := C;
-            end if;
-                
-            -- Modify the Z Flag
-            if(Set_Mask(STATUS_BIT_Z) = '1') then
-                if(R = STD_LOGIC_VECTOR(to_unsigned(0, R'length))) then
-                    Status(STATUS_BIT_Z) := '1';
-                else
-                    Status(STATUS_BIT_Z) := '0';
-                end if;
-            end if;
-                
-            -- Modify the N Flag
-            if(Set_Mask(STATUS_BIT_N) = '1') then
-                NFlag := R(R'length - 1);
-                Status(STATUS_BIT_N) := NFlag;
-            else
-                NFlag := '0';
-            end if;
-                
-            -- Modify the V Flag
-            if(Set_Mask(STATUS_BIT_V) = '1') then
-                VFlag := V;
-                Status(STATUS_BIT_V) := VFlag;
-            else 
-                VFlag := '0';
-            end if;
-                
-            -- Modify the S Flag
-            if(Set_Mask(STATUS_BIT_S) = '1') then
-                Status(STATUS_BIT_S) := NFlag xor VFlag;
-            end if;
-
-            -- Modify the H Flag
-            if(Set_Mask(STATUS_BIT_H) = '1') then
-                Status(STATUS_BIT_H) := H;
-            end if;
+        -- Modify the H Flag
+        if(Mask(STATUS_BIT_H) = '1') then
+            Status(STATUS_BIT_H) := H;
         end if;
 
         SREGOut <= Status;

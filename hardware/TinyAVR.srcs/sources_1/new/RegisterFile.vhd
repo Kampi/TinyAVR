@@ -48,7 +48,7 @@ entity RegisterFile is
 
             -- Data inputs
             Sel         : in Sel_t;                                         -- Select the input data source for the register file
-            ALU         : in STD_LOGIC_VECTOR(7 downto 0);                  -- Data input from ALU
+            ALUIn       : in STD_LOGIC_VECTOR(7 downto 0);                  -- Data input from ALU
             Immediate   : in STD_LOGIC_VECTOR(7 downto 0);                  -- Data input from immediate value
             Memory      : in STD_LOGIC_VECTOR(7 downto 0);                  -- Data input from SRAM
 
@@ -84,7 +84,7 @@ begin
         if(WE = '1') then
             case Sel is
                 when SRC_ALU =>
-                    RegisterFile(to_integer(UNSIGNED(DstRegAddr))) <= ALU;
+                    RegisterFile(to_integer(UNSIGNED(DstRegAddr))) <= ALUIn;
 
                 when SRC_IMMEDIATE =>
                     RegisterFile(to_integer(UNSIGNED(DstRegAddr))) <= Immediate;

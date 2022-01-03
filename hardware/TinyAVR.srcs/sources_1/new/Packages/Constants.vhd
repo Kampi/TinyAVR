@@ -30,7 +30,7 @@ package Constants is
     subtype PC_Mode_t       is STD_LOGIC_VECTOR(1 downto 0);                        -- Program Counter modes
     subtype ALU_Src_t       is STD_LOGIC_VECTOR(1 downto 0);                        -- Input sources for the ALU
     subtype ALU_Op_t        is STD_LOGIC_VECTOR(4 downto 0);                        -- ALU operation code
-    subtype Sram_Mode_t     is STD_LOGIC_VECTOR(2 downto 0);                        -- SRAM operation modes
+    subtype Sram_Source_t   is STD_LOGIC_VECTOR(2 downto 0);                        -- SRAM data sources
     subtype Bit_Mask_t      is STD_LOGIC_VECTOR(7 downto 0);                        -- Bit level mask for the bit operations
     subtype Set_Opt_t       is STD_LOGIC;                                           -- Clear / Set flag for bit mask operations
     subtype Write_Opt_t     is STD_LOGIC;                                           -- Write / Lock options for individual status bits
@@ -43,9 +43,10 @@ package Constants is
     constant PC_SET                 :   PC_Mode_t       := "11";                    -- Set the Program Counter to a given address
 
     -- SRAM address sources
-    constant MEM_MEMORY             :   Sram_Mode_t     := "000";                   -- Store the data in the normal memory
-    constant MEM_STACK              :   Sram_Mode_t     := "001";                   -- Store the data in the stack
-    constant MEM_UPDATE_SREG        :   Sram_Mode_t     := "010";                   -- Update the SREG
+    constant MEM_MEMORY             :   Sram_Source_t   := "000";                   -- Update SRAM
+    constant MEM_SREG               :   Sram_Source_t   := "001";                   -- Update SREG
+    constant MEM_REG                :   Sram_Source_t   := "010";                   -- Update Register
+    constant MEM_SP                 :   Sram_Source_t   := "011";                   -- Update Stack Pointer
 
     -- Input data sources
     constant SRC_ALU                :   Sel_t           := "00";                    -- Use the ALU output as data source
@@ -101,14 +102,5 @@ package Constants is
     constant STATUS_FLAG_HSVNZC     :   Bit_Mask_t      := "00111111";              -- Change the status flags H, S, V, N, Z, C
     constant STATUS_FLAG_SVNZC      :   Bit_Mask_t      := "00011111";              -- Change the status flags S, V, N, Z, C
     constant STATUS_FLAG_SVNZ       :   Bit_Mask_t      := "00011110";              -- Change the status flags S, V, N, Z
-
-    -- Bit mask operations
-    -- Set / clear options
-    constant OPT_SET                :   Set_Opt_t       := '1';                     -- Set the masked bits (used by BSET and SBI)
-    constant OPT_CLEAR              :   Set_Opt_t       := '0';                     -- Clear the masked bits (used by BCLR and CBI)
-
-    -- Individual write options
-    constant OPT_WRITE              :   Write_Opt_t     := '1';                     -- Enable write for individual bits (used by BSET, BCLR, CBI and SBI)
-    constant OPT_LOCK               :   Write_Opt_t     := '0';                     -- Disable write for individual bits (used by BSET, BCLR, CBI and SBI)
 
 end package;

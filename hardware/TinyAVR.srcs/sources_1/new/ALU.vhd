@@ -35,19 +35,14 @@ library TinyAVR;
 use TinyAVR.Constants.all;
 
 entity ALU is
-    Port (  Clock       : in STD_LOGIC;                                 -- Clock signal
-            nReset      : in STD_LOGIC;                                 -- Reset (active low)
-    
-            RegD        : in STD_LOGIC_VECTOR(7 downto 0);              -- Register D input
+    Port (  RegD        : in STD_LOGIC_VECTOR(7 downto 0);              -- Register D input
             RegR        : in STD_LOGIC_VECTOR(7 downto 0);              -- Register R input
             Immediate   : in STD_LOGIC_VECTOR(7 downto 0);              -- Immediate input
 
             Operation   : in ALU_Op_t;                                  -- ALU operation
             Sel         : in ALU_Src_t;                                 -- Input source for the ALU
             T_Mask      : in STD_LOGIC_VECTOR(7 downto 0);              -- Input mask for the T Flag (used by BST and BLD)
-            Set_Mask    : in Bit_Mask_t;                                -- Status register modification mask
-            Set_E       : in Write_Opt_t;                               -- Enable write of individual bits (used by BSET and BCLR)
-            Set         : in Set_Opt_t;                                 -- Status register set / clear option (used by BSET and BCLR)
+            Mask        : in Bit_Mask_t;                                --
             SREGIn      : in STD_LOGIC_VECTOR(7 downto 0);              -- Status register input
 
             SREGOut     : out STD_LOGIC_VECTOR(7 downto 0);             -- Modified Status register output
@@ -131,9 +126,7 @@ architecture ALU_Arch of ALU is
                 C           : in STD_LOGIC;
                 T           : in STD_LOGIC;
                 SREGIn      : in STD_LOGIC_VECTOR(7 downto 0);
-                Set_Mask    : in Bit_Mask_t;
-                Set_E       : in Write_Opt_t;
-                Set         : in Set_Opt_t;
+                Mask        : in Bit_Mask_t;
                 SREGOut     : out STD_LOGIC_VECTOR(7 downto 0)
                 );
     end component;
@@ -206,9 +199,7 @@ begin
                                         C           => C,
                                         T           => T,
                                         SREGIn      => SREGIn,
-                                        Set_Mask    => Set_Mask,
-                                        Set_E       => Set_E,
-                                        Set         => Set,
+                                        Mask        => Mask,
                                         SREGOut     => SREGOut_Temp
                                         );
 

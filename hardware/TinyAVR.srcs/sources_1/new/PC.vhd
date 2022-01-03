@@ -39,11 +39,14 @@ entity PC is
     Port (  Clock           : in STD_LOGIC;                                 -- Clock signal
             nReset          : in STD_LOGIC;                                 -- Reset (active low)
             Mode            : in PC_Mode_t;                                 -- Update source for the Programm Counter
-            Offset          : in STD_LOGIC_VECTOR(11 downto 0);             -- Address offset for the Programm Counter
-            Z               : in STD_LOGIC_VECTOR(15 downto 0);             -- Z register input
-            AddressIn       : in STD_LOGIC_VECTOR(15 downto 0);             -- Address input for the Program Counter
-            Data            : in STD_LOGIC_VECTOR(15 downto 0);             -- Programm data
-            AddressOut      : out STD_LOGIC_VECTOR(15 downto 0);            -- Programm address output
+
+            Addr_Offset     : in STD_LOGIC_VECTOR(11 downto 0);             -- Address offset for the Programm Counter
+            Z               : in STD_LOGIC_VECTOR(15 downto 0);             -- Address input from Z register
+            Addr            : in STD_LOGIC_VECTOR(15 downto 0);             -- Address input for the Program Counter
+
+            Prog_Addr       : out STD_LOGIC_VECTOR(15 downto 0);            -- Programm address output
+            Prog_Mem         : in STD_LOGIC_VECTOR(15 downto 0);            -- Programm memory
+
             IR              : out STD_LOGIC_VECTOR(15 downto 0)             -- Instruction register
             );
 end PC;
@@ -59,12 +62,12 @@ begin
         wait until rising_edge(Clock);
 
         if(Mode = PC_INC) then
-            IR <= Data;
+            IR <= Prog_Mem;
         end if;
 
         case Mode is
             when PC_INC =>
-                PC <= STD_LOGIC_VECTOR(SIGNED(PC) + SIGNED(Offset));
+                PC <= STD_LOGIC_VECTOR(SIGNED(PC) + SIGNED(Addr_Offset));
 
             when PC_Z_REG =>
                 PC <= Z;
@@ -73,7 +76,7 @@ begin
                 PC <= PC;
 
             when PC_SET =>
-                PC <= AddressIn;
+                PC <= Addr;
 
             when others =>
                 PC <= (others => 'X');
@@ -85,5 +88,5 @@ begin
         end if;
     end process;
 
-    AddressOut <= PC;
+    Prog_Addr <= PC;
 end PC_Arch;

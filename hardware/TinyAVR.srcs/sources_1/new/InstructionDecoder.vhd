@@ -39,7 +39,7 @@ use TinyAVR.Opcodes.all;
 entity InstructionDecoder is
     Port (  Clock           : in STD_LOGIC;                                 -- Clock signal
             nReset          : in STD_LOGIC;                                 -- Reset (active low)
-            SREG            : in STD_LOGIC_VECTOR(7 downto 0);              -- Status Register input
+
             IR              : in STD_LOGIC_VECTOR(15 downto 0);             -- Instruction Register
 
             ALU_Operation   : out ALU_Op_t;                                 -- ALU operation
@@ -55,43 +55,43 @@ entity InstructionDecoder is
             Register_WE     : out STD_LOGIC;                                -- Register file write enable signal
             Register_Pair   : out STD_LOGIC;                                -- Copy register pair (used by MOVW) 
 
+            Memory_Data     : inout STD_LOGIC_VECTOR(7 downto 0);           --
             Memory_WE       : out STD_LOGIC;                                -- SRAM write enable signal
             Memory_Enable   : out STD_LOGIC;                                -- SRAM enable signal
-            Memory_Stack    : out STD_LOGIC_VECTOR(7 downto 0);             -- Stack data for the SRAM
-            Memory_Mask     : out STD_LOGIC_VECTOR(7 downto 0);             -- Bit mask for the SRAM (used by CBI and SBI)
-            Memory_Address  : out STD_LOGIC_VECTOR(5 downto 0);             -- SRAM memory address
-            Memory_Mode     : out Sram_Mode_t;                              -- SRAM operation mode
-            Memory_Set      : out Set_Opt_t;                                -- Memory set / clear option (used by CBI and SBI)
-            Memory_Write    : out Write_Opt_t;                              -- Enable write of individual bits in the memory (used by CBI and SBI)
+            Memory_Address  : out STD_LOGIC_VECTOR(7 downto 0);             -- SRAM memory address
+            Memory_Source   : out Sram_Source_t;                            -- SRAM data source
 
-            PC_Address      : in STD_LOGIC_VECTOR(15 downto 0);             -- Program address from programm counter
+            PC              : in STD_LOGIC_VECTOR(15 downto 0);             -- Program address from programm counter
+            PC_Addr         : out STD_LOGIC_VECTOR(15 downto 0);            -- Program address for programm counter
             PC_Mode         : out PC_Mode_t;                                -- Program counter mode
             PC_Offset       : out STD_LOGIC_VECTOR(11 downto 0);            -- Address offset for the Programm Counter
 
-            SREG_Write      : out Write_Opt_t;                              -- Enable write of individual bits in the Status Register (used by BSET and BCLR)
-            SREG_Set        : out Set_Opt_t;                                -- Status Register set / clear option (used by BSET and BCLR)
-            SREG_Mask       : out Bit_Mask_t                                -- Status Register modification mask (used by BSET and BCLR)
+            StackPointerIn  : in STD_LOGIC_VECTOR(15 downto 0);             -- Stack pointer input
+            StackPointerOut : out STD_LOGIC_VECTOR(15 downto 0);            -- Stack pointer output
+
+            SREG_Mask       : out Bit_Mask_t;                               -- Status Register modification mask
+            SREG            : in STD_LOGIC_VECTOR(7 downto 0)               -- Status Register input
             );
 end InstructionDecoder;
 
-architecture InstructionDecoder of InstructionDecoder is
+architecture InstructionDecoder_Arch of InstructionDecoder is
 
     signal ClockCycle       : INTEGER                           := 0;
+        signal Test        : STD_LOGIC_VECTOR(15 downto 0)     := (others => '0');
 
 begin
 
-    DecodeInstruction: process(IR, nReset, ClockCycle)
+    DecodeInstruction: process(IR, nReset, ClockCycle, SREG, StackPointerIn, Memory_Data, PC)
         variable Dst            : STD_LOGIC_VECTOR(6 downto 0)      := (others => '0');
         variable RegD           : STD_LOGIC_VECTOR(6 downto 0)      := (others => '0');
         variable RegR           : STD_LOGIC_VECTOR(6 downto 0)      := (others => '0');
         variable ImData         : STD_LOGIC_VECTOR(7 downto 0)      := (others => '0');
-        variable ReturnAddress  : STD_LOGIC_VECTOR(15 downto 0)     := (others => '0');
+        variable SREG_Temp      : STD_LOGIC_VECTOR(7 downto 0)      := (others => '0');
+        variable SP_Temp        : STD_LOGIC_VECTOR(15 downto 0)     := (others => '0');
     begin
         PC_Mode         <= PC_INC;                                          -- Default: Increment the Programm Counter
         PC_Offset       <= STD_LOGIC_VECTOR(TO_SIGNED(1, PC_Offset'length));-- Default: Step size is 1
         SREG_Mask       <= (others => '0');                                 -- Default: Don´t mask any status bits
-        SREG_Set        <= OPT_SET;                                         -- Default: Set the bits in the SREG
-        SREG_Write      <= OPT_LOCK;                                        -- Default: Don´t write individual bits in the SREG
         ALU_Operation   <= ALU_OP_NOP;                                      -- Default: No operation by the ALU
         ALU_Sel         <= ALU_SRC_REG;                                     -- Default: Set register R as input for the ALU
         Register_Sel    <= SRC_ALU;                                         -- Default: Set ALU output as input for the register file
@@ -99,34 +99,43 @@ begin
         Register_Pair   <= '0';                                             -- Default: Don´t copy register pairs
         Memory_WE       <= '0';                                             -- Default: Don´t write to the memory
         Memory_Enable   <= '0';                                             -- Default: Don´t use the memory
-        Memory_Address  <= (others => '0');                                 -- Default: Set memory address to zero
-        Memory_Mask     <= (others => '0');                                 -- Default: Don´t mask any memory bits
-        Memory_Mode     <= MEM_UPDATE_SREG;                                 -- Default: Update the SREG
-        Memory_Write    <= OPT_LOCK;                                        -- Default: Don´t write individual bits
-        Memory_Set      <= OPT_SET;                                         -- Default: Set the bits in the memory
+        Memory_Address  <= (others => '0');                                 -- Default: Set memory address to SREG
+        Memory_Source   <= MEM_SREG;                                        -- Default: Update the SREG
+        Memory_Data     <= (others => 'Z');                                 -- Default: Don´t use the memory bus
 
         Dst             := "00" & IR(8 downto 4);                           -- Default: Get the destination register address from the instruction
         RegD            := "00" & IR(8 downto 4);                           -- Default: Get the Register D address from the instruction
         RegR            := "00" & IR(9) & IR(3 downto 0);                   -- Default: Get the Register R address from the instruction
         ImData          := IR(11 downto 8) & IR(3 downto 0);                -- Default: Get the immediate value from the instruction
+        SREG_Temp       := SREG;
 
         -- ADC instruction
+        --  - Enable write to the SRAM
+        --  - Enable the SRAM
         --  - Set the ALU operation to "ADC"
         --  - Flag the changeable status flags
         if(std_match(IR, OpADC)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ALU_Operation   <= ALU_OP_ADC;
             SREG_Mask       <= STATUS_FLAG_HSVNZC;
         end if;
 
         -- ADD instruction
+        --  - Enable write to the SRAM
+        --  - Enable the SRAM
         --  - Set the ALU operation to "ADD"
         --  - Flag the changeable status flags
         if(std_match(IR, OpADD)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ALU_Operation   <= ALU_OP_ADD;
             SREG_Mask       <= STATUS_FLAG_HSVNZC;
         end if;
 
         -- ADIW instruction
+        --  - Enable write to the SRAM
+        --  - Enable the SRAM
         --  - Flag the changeable status flags
         --  - Set the input for the ALU to "IMMEDIATE"
         --  - Get the immediate value
@@ -136,6 +145,8 @@ begin
         --  - 2. Clock: Clear the immediate value
         --              Set the ALU operation to "ADC"
         if(std_match(IR, OpADIW)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             SREG_Mask       <= STATUS_FLAG_SVNZC;
             ALU_Sel         <= ALU_SRC_IMMEDIATE;
             ImData          := "00" & IR(7 downto 6) & IR(3 downto 0);
@@ -176,14 +187,22 @@ begin
         end if;
 
         -- AND instruction
+        --  - Enable write to the SRAM
+        --  - Enable the SRAM
+        --  - Enable write to the SRAM
+        --  - Enable the SRAM
         --  - Set the ALU operation to "AND"
         --  - Flag the changeable status flags
         if(std_match(IR, OpAND)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ALU_Operation   <= ALU_OP_AND;
             SREG_Mask       <= STATUS_FLAG_SVNZ;
         end if;
 
         -- ANDI instruction
+        --  - Enable write to the SRAM
+        --  - Enable the SRAM
         --  - Set the input register address (the address offset is 16)
         --  - Set the destination register address (the address offset is 16)
         --  - Set the input for the ALU to "IMMEDIATE"
@@ -192,33 +211,49 @@ begin
         if(std_match(IR, OpANDI) or std_match(IR, OpCBR)) then
             RegD            := "001" & IR(7 downto 4);
             Dst             := "001" & IR(7 downto 4);
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ALU_Sel         <= ALU_SRC_IMMEDIATE;
             ALU_Operation   <= ALU_OP_AND;
             SREG_Mask       <= STATUS_FLAG_SVNZ;
         end if;
 
         -- ASR instruction
+        --  - Enable write to the SRAM
+        --  - Enable the SRAM
         --  - Set the ALU operation to "ASR"
         --  - Flag the changeable status flags
         if(std_match(IR, OpASR)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ALU_Operation   <= ALU_OP_ASR;
             SREG_Mask       <= STATUS_FLAG_SVNZC;
         end if;
 
         -- BCLR instruction
-        --  - Flag the changeable status flags
-        --  - Set the write direction to 'CLEAR'
-        --  - Enable write for individual bits in the status register
         --  - Disable write for the register file
+        --  - Enable the SRAM
+        --  - Enable write to the SRAM
+        --  - Clear the target bit in the SREG
+        --  - Select the memory bus as data source for the SRAM
+        --  - Set the modified SRAM as data for the SRAM
+        --  - Set the memory address to the SRAM
         if(std_match(IR, OpBCLR)) then
-            SREG_Mask(to_integer(UNSIGNED(IR(6 downto 4)))) <= '1';
-            SREG_Set        <= OPT_CLEAR;
-            SREG_Write      <= OPT_WRITE;
             Register_WE     <= '0';
+            Memory_Enable   <= '1';
+            Memory_WE       <= '1';
+            SREG_Temp(to_integer(UNSIGNED(IR(6 downto 4)))) := '0';
+            Memory_Source   <= MEM_MEMORY;
+            Memory_Data     <= SREG_Temp;
+            Memory_Address  <= STD_LOGIC_VECTOR(to_unsigned(16#3F#, Memory_Address'length));
         end if;
 
         -- BLD instruction
+        --  - Enable write to the SRAM
+        --  - Enable the SRAM
         if(std_match(IR, OpBLD)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ALU_Sel         <= ALU_SRC_T_REG;
             ALU_Operation   <= ALU_OP_OR;
             T_Mask          <= "00000" & IR(2 downto 0);
@@ -237,28 +272,38 @@ begin
         end if;
 
         -- BSET instruction
-        --  - Flag the changeable status flags
-        --  - Set the write direction to 'SET'
-        --  - Enable write for individual bits in the status register
         --  - Disable write for the register file
+        --  - Enable the SRAM
+        --  - Enable write to the SRAM
+        --  - Set the target bit in the SREG
+        --  - Select the memory bus as data source for the SRAM
+        --  - Set the modified SRAM as data for the SRAM
+        --  - Set the memory address to the SRAM
         if(std_match(IR, OpBSET)) then
-            SREG_Mask(to_integer(UNSIGNED(IR(6 downto 4)))) <= '1';
-            SREG_Set        <= OPT_SET;
-            SREG_Write      <= OPT_WRITE;
             Register_WE     <= '0';
+            Memory_Enable   <= '1';
+            Memory_WE       <= '1';
+            SREG_Temp(to_integer(UNSIGNED(IR(6 downto 4)))) := '1';
+            Memory_Source   <= MEM_MEMORY;
+            Memory_Data     <= SREG_Temp;
+            Memory_Address  <= STD_LOGIC_VECTOR(to_unsigned(16#3F#, Memory_Address'length));
         end if;
 
         -- BST instruction
+        --  - Enable the SRAM
+        --  - Enable write to the SRAM
         --  - Disable write for the register file
-        --  - Set the destination register address 
         --  - Set the bit mask for the T Flag
         --  - Enable writing of the T Flag
         --  - Set the ALU operation to "SET T FLAG"
         if(std_match(IR, OpBST)) then
+            Memory_Enable   <= '1';
+            Memory_WE       <= '1';
             Register_WE             <= '0';
             T_Mask                  <= "00000" & IR(2 downto 0);
             SREG_Mask(STATUS_BIT_T) <= '1';
             ALU_Operation           <= ALU_SET_T;
+
         end if;
 
         -- CALL instruction
@@ -266,21 +311,21 @@ begin
         end if;
 
         -- CBI instruction
-        --  - Enable write for the SRAM
         --  - Enable the SRAM
+        --  - Enable write for the SRAM
         --  - Set the SRAM address
         --  - Set the bit mask for the bit manipulation
         --  - Configure the bit manipulation to "SET"
         --  - Enable bit manipulation
         --  - Save the data in the SRAM region
         if(std_match(IR, OpCBI)) then
-            Memory_WE       <= '1';
             Memory_Enable   <= '1';
-            Memory_Address  <= "0" & IR(7 downto 3);
-            Memory_Mask(to_integer(UNSIGNED(IR(2 downto 0)))) <= '1';
-            Memory_Set      <= OPT_CLEAR;
-            Memory_Write    <= OPT_WRITE;
-            Memory_Mode     <= MEM_MEMORY;
+            Memory_WE       <= '1';
+            Memory_Address  <= "000" & IR(7 downto 3);
+            --Memory_Mask(to_integer(UNSIGNED(IR(2 downto 0)))) <= '1';
+            --Memory_Set      <= OPT_CLEAR;
+            --Memory_Write    <= OPT_WRITE;
+            --Memory_Source   <= MEM_MEMORY;
         end if;
 
         -- COM instruction
@@ -302,10 +347,14 @@ begin
         end if;
 
         -- CPC instruction
+        --  - Enable write for the SRAM
+        --  - Enable the SRAM
         --  - Set the ALU operation to "SBC"
         --  - Flag the changeable status flags
         --  - Disable write for the register file
         if(std_match(IR, OpCPC)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ALU_Operation   <= ALU_OP_SBC;
             SREG_Mask       <= STATUS_FLAG_HSVNZC;
             Register_WE     <= '0';
@@ -324,11 +373,15 @@ begin
         end if;
 
         -- DEC instruction
+        --  - Enable write for the SRAM
+        --  - Enable the SRAM
         --  - Set the input for the ALU to "IMMEDIATE"
         --  - Set the immediate value for the operation
         --  - Set the ALU operation to "SUB"
         --  - Flag the changeable status flags
         if(std_match(IR, OpDEC)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ALU_Sel         <= ALU_SRC_IMMEDIATE;
             ImData          := x"01";
             ALU_Operation   <= ALU_OP_SUB;
@@ -368,7 +421,37 @@ begin
         end if;
 
         -- ICALL instruction
+        --  - Disable write for the register file
+        --  - 1. Clock: Hold the PC
+        --              Set the ALU operation to "ADC"
+        --              Enable the SRAM
+        --              Enable write to the SRAM
+        --              Set the destination for the SRAM to Memory
+        --              Set the memory address to the current stack pointer value
+        --              Set the memory data to the address of the next instruction after the instruction
+        --  - 2. Clock: Set the address mode for the PC to Z-Register
+        --  - 3. Clock: Enable the SRAM
+        --              Enable write to the SRAM
+        --              Set the destination for the SRAM to stack pointer
+        --              Set the stack pointer to the current stack pointer minus 2 
         if(std_match(IR, OpICALL)) then
+            Register_WE     <= '0';
+
+            if(ClockCycle = 0) then
+                PC_Mode         <= PC_KEEP;
+                Memory_Enable   <= '1';
+                Memory_WE       <= '1';
+                Memory_Source   <= MEM_MEMORY;
+                Memory_Address  <= StackPointerIn((Memory_Address'length - 1) downto 0);
+                Memory_Data     <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(PC)), Memory_Data'length));
+            elsif(ClockCycle = 1) then
+                PC_Mode         <= PC_Z_REG;
+            elsif(ClockCycle = 2) then
+                Memory_Enable   <= '1';
+                Memory_WE       <= '1';
+                Memory_Source   <= MEM_SP;
+                StackPointerOut <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(StackPointerIn)) - 2, StackPointerOut'length));
+            end if;
         end if;
 
         -- IJMP instruction
@@ -389,20 +472,24 @@ begin
         --  - Set the memory as data source for the register file
         --  - Enable the SRAM
         --  - Set the SRAM address
-        --  - Save the data in the SRAM region
+        --  - Save the data in the SRAM
         if(std_match(IR, OpIN)) then
-            Register_Sel    <= SRC_MEMORY; 
+            Register_Sel    <= SRC_MEMORY;
             Memory_Enable   <= '1';
-            Memory_Address  <= IR(10 downto 9) & IR(3 downto 0);
-            Memory_Mode     <= MEM_MEMORY;
+            Memory_Address  <= "00" & IR(10 downto 9) & IR(3 downto 0);
+            Memory_Source   <= MEM_MEMORY;
         end if;
 
         -- INC instruction
+        --  - Enable write for the SRAM
+        --  - Enable the SRAM
         --  - Set the immediate value for the operation
         --  - Set the input for the ALU to "IMMEDIATE"
         --  - Set the ALU operation to "ADD"
         --  - Flag the changeable status flags
         if(std_match(IR, OpINC)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ImData          := x"01";
             ALU_Sel         <= ALU_SRC_IMMEDIATE;
             ALU_Operation   <= ALU_OP_ADD;
@@ -462,20 +549,28 @@ begin
         end if;
 
         -- OR instruction
+        --  - Enable write for the SRAM
+        --  - Enable the SRAM
         --  - Set the ALU operation to "OR"
         --  - Flag the changeable status flags
         if(std_match(IR, OpOR)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ALU_Operation   <= ALU_OP_OR;
             SREG_Mask       <= STATUS_FLAG_SVNZ;
         end if;
 
         -- ORI instruction
+        --  - Enable write for the SRAM
+        --  - Enable the SRAM
         --  - Set the input register address (the address offset is 16)
         --  - Set the destination register address (the address offset is 16)
         --  - Set the input for the ALU to "IMMEDIATE"
         --  - Set the ALU operation to "OR"
         --  - Flag the changeable status flags
         if(std_match(IR, OpORI)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             RegD            := "001" & IR(7 downto 4);
             Dst             := "001" & IR(7 downto 4);
             ALU_Sel         <= ALU_SRC_IMMEDIATE;
@@ -485,60 +580,101 @@ begin
 
         -- OUT instruction
         --  - Disable write for the register file
-        --  - Enable write for the SRAM
         --  - Enable the SRAM
+        --  - Enable write for the SRAM
         --  - Set the SRAM address
-        --  - Save the data in the SRAM region
+        --  - Set the register file as SRAM source
         if(std_match(IR, OpOUT)) then
             Register_WE     <= '0';
-            Memory_WE       <= '1';
             Memory_Enable   <= '1';
-            Memory_Address  <= IR(10 downto 9) & IR(3 downto 0);
-            Memory_Mode     <= MEM_MEMORY;
+            Memory_WE       <= '1';
+            Memory_Address  <= "00" & IR(10 downto 9) & IR(3 downto 0);
+            Memory_Source   <= MEM_REG;
         end if;
 
         -- POP instruction
-        --  - Set the stack pointer to decrement
         --  - Enable the SRAM
-        --  - Enable read from the SRAM
-        --  - Set the input mode for the SRAM to STACK
-        --  - Disable the program counter
+        --  - 1. Clock: Disable write for the register file
+        --              Hold the PC
+        --              Enable write for the SRAM
+        --              Set the stack pointer as input source for the SRAM
+        --              Write the new stack pointer into the SRAM
+        --  - 2. Clock: Set the destination register address
+        --              Set the SRAM as data source for the register file
+        --              Disable memory write
+        --              Set the memory address to the current stack pointer
         if(std_match(IR, OpPOP)) then
+            Memory_Enable   <= '1';
+
             if(ClockCycle = 0) then
-                Memory_Enable   <= '1';
-                Memory_WE       <= '0';
-                Memory_Mode     <= MEM_STACK;
+                Register_WE     <= '0';
                 PC_Mode         <= PC_KEEP;
+                Memory_WE       <= '1';
+                Memory_Source   <= MEM_SP;
+                StackPointerOut <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(StackPointerIn)) + 1, StackPointerOut'length));
             elsif(ClockCycle = 1) then
-                Register_Sel    <= SRC_MEMORY;
-                Register_WE     <= '1';
                 RegD            := "00" & IR(8 downto 4);
+                Register_Sel    <= SRC_MEMORY;
+                Memory_WE       <= '0';
+                Memory_Address  <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(StackPointerIn)), Memory_Address'length));
             end if;
         end if;
 
         -- PUSH instruction
         --  - Disable write for the register file
-        --  - Set the output register of the register file
-        --  - Disable the program counter
-        --  - Set the stack pointer to decrement
         --  - Enable the SRAM
-        --  - Enable write to the SRAM
-        --  - Set the input mode for the SRAM to STACK
+        --  - Enable write for the SRAM
+        --  - 1. Clock: Hold the PC
+        --              Set the register as input source for the SRAM
+        --              Set the memory address to the stack pointer
+        --  - 2. Clock: Set the stack pointer as input source for the SRAM
+        --              Write the new stack pointer into the SRAM
         if(std_match(IR, OpPUSH)) then
             Register_WE     <= '0';
+            Memory_Enable   <= '1';
+            Memory_WE       <= '1';
 
             if(ClockCycle = 0) then
                 RegD            := "00" & IR(8 downto 4);
                 PC_Mode         <= PC_KEEP;
+                Memory_Source   <= MEM_REG;
+                Memory_Address  <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(StackPointerIn)), Memory_Address'length));
             elsif(ClockCycle = 1) then
-                Memory_Enable   <= '1';
-                Memory_WE       <= '1';
-                Memory_Mode     <= MEM_STACK;
+                Memory_Source   <= MEM_SP;
+                StackPointerOut <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(StackPointerIn)) - 1, StackPointerOut'length));
             end if;
         end if;
 
         -- RCALL instruction
         if(std_match(IR, OpRCALL)) then
+        end if;
+
+        -- RET instruction
+        --  - 1. Clock: Hold the PC
+        if(std_match(IR, OpRET)) then
+            if(ClockCycle = 0) then
+                PC_Mode         <= PC_KEEP;
+                Memory_Enable   <= '1';
+                Memory_WE       <= '1';
+                Memory_Source   <= MEM_SP;
+                StackPointerOut <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(StackPointerIn)) + 2, StackPointerOut'length));
+            elsif(ClockCycle = 1) then
+                PC_Mode         <= PC_KEEP;
+                Memory_Enable   <= '1';
+                Memory_WE       <= '0';
+                Memory_Source   <= MEM_MEMORY;
+                Memory_Address  <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(StackPointerIn)) - 0, Memory_Address'length));
+                SP_Temp         := Memory_Data & "00000000";
+            elsif(ClockCycle = 2) then
+                PC_Mode         <= PC_SET;
+                Memory_Enable   <= '1';
+                Memory_WE       <= '0';
+                Memory_Source   <= MEM_MEMORY;
+                Memory_Address  <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(StackPointerIn)) - 1, Memory_Address'length));
+                SP_Temp         := Memory_Data & SP_Temp(15 downto 8);
+                PC_Addr         <= SP_Temp;
+            elsif(ClockCycle = 3) then
+            end if;
         end if;
 
         -- RJMP instruction
@@ -556,27 +692,39 @@ begin
         end if;
 
         -- ROR instruction
+        --  - Enable write for the SRAM
+        --  - Enable the SRAM
         --  - Set the ALU operation to "ROR"
         --  - Flag the changeable status flags
         if(std_match(IR, OpROR)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ALU_Operation   <= ALU_OP_ROR;
             SREG_Mask       <= STATUS_FLAG_SVNZC;
         end if;
 
         -- SBC instruction
+        --  - Enable write for the SRAM
+        --  - Enable the SRAM
         --  - Set the ALU operation to "SBC"
         --  - Flag the changeable status flags
         if(std_match(IR, OpSBC)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ALU_Operation   <= ALU_OP_SBC;
             SREG_Mask       <= STATUS_FLAG_HSVNZC;
         end if;
 
         -- SBCC instruction
+        --  - Enable write for the SRAM
+        --  - Enable the SRAM
         --  - Set the input register address (the address offset is 16)
         --  - Set the destination register address (the address offset is 16)
         --  - Set the ALU operation to "SBC"
         --  - Flag the changeable status flags
         if(std_match(IR, OpSBCI)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             RegD            := "001" & IR(7 downto 4);
             Dst             := "001" & IR(7 downto 4);
             ALU_Sel         <= ALU_SRC_IMMEDIATE;
@@ -595,14 +743,16 @@ begin
         if(std_match(IR, OpSBI)) then
             Memory_WE       <= '1';
             Memory_Enable   <= '1';
-            Memory_Address  <= "0" & IR(7 downto 3);
-            Memory_Mask(to_integer(UNSIGNED(IR(2 downto 0)))) <= '1';
-            Memory_Set      <= OPT_SET;
-            Memory_Write    <= OPT_WRITE;
-            Memory_Mode     <= MEM_MEMORY;
+            Memory_Address  <= "000" & IR(7 downto 3);
+            --Memory_Mask(to_integer(UNSIGNED(IR(2 downto 0)))) <= '1';
+            --Memory_Set      <= OPT_SET;
+            --Memory_Write    <= OPT_WRITE;
+            Memory_Source   <= MEM_MEMORY;
         end if;
 
         -- SBIW instruction
+        --  - Enable write for the SRAM
+        --  - Enable the SRAM
         --  - Flag the changeable status flags
         --  - Set the input for the ALU to "IMMEDIATE"
         --  - Get the immediate value
@@ -612,6 +762,8 @@ begin
         --  - 2. Clock: Clear the immediate value
         --              Set the ALU operation to "SBC"
         if(std_match(IR, OpSBIW)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             SREG_Mask       <= STATUS_FLAG_SVNZC;
             ALU_Sel         <= ALU_SRC_IMMEDIATE;
             ImData          := "00" & IR(7 downto 6) & IR(3 downto 0);
@@ -685,6 +837,8 @@ begin
         --  - Set the ALU operation to "SUB"
         --  - Flag the changeable status flags
         if(std_match(IR, OpSUB)) then
+            Memory_WE       <= '1';
+            Memory_Enable   <= '1';
             ALU_Operation   <= ALU_OP_SUB;
             SREG_Mask       <= STATUS_FLAG_HSVNZC;
         end if;
@@ -733,40 +887,14 @@ begin
         -- Increase the cycle counter according to the current instruction
         if((ClockCycle = 0) and (std_match(IR, OpMUL) or std_match(IR, OpADIW) or std_match(IR, OpSBIW) or std_match(IR, OpSTS) or 
                                  std_match(IR, OpJMP) or std_match(IR, OpRJMP) or std_match(IR, OpIJMP) or 
-                                 std_match(IR, OpRCALL) or std_match(IR, OpPOP) or std_match(IR, OpPUSH)
+                                 std_match(IR, OpRCALL) or std_match(IR, OpICALL) or std_match(IR, OpPOP) or std_match(IR, OpPUSH) or
+                                 std_match(IR, OpRET)
                                  )) then
             ClockCycle <= 1;
-        elsif((ClockCycle = 1) and (std_match(IR, OpRCALL))) then
+        elsif((ClockCycle = 1) and (std_match(IR, OpRCALL) or std_match(IR, OpICALL) or std_match(IR, OpRET))) then
             ClockCycle <= 2;
-        elsif((ClockCycle = 2) and (std_match(IR, OpCALL))) then
-            ClockCycle <= 23;
+        elsif((ClockCycle = 2) and (std_match(IR, OpRET))) then
+            ClockCycle <= 3;
         end if;
-
-        -- These instructions need two clock cycles
---        if((Cycles = "00") and (std_match(IR, OpMUL) or std_match(IR, OpADIW) or std_match(IR, OpSBIW) or std_match(IR, OpLDX)  or std_match(IR, OpLDXI) or std_match(IR, OpLDXD) or
---                                std_match(IR, OpLDYI) or std_match(IR, OpLDYD) or std_match(IR, OpLDDY) or std_match(IR, OpLDZI) or std_match(IR, OpLDZD) or std_match(IR, OpLDDZ) or
---                                       std_match(IR, OpSTX)  or std_match(IR, OpSTXI) or std_match(IR, OpSTXD) or
---                                       std_match(IR, OpSTYI) or std_match(IR, OpSTYD) or std_match(IR, OpSTDY) or
---                                       std_match(IR, OpSTZI) or std_match(IR, OpSTZD) or std_match(IR, OpSTDZ) or
---                                       std_match(IR, OpPOP)  or std_match(IR, OpPUSH) or
---                                       std_match(IR, OpLDS)  or std_match(IR, OpSTS)  or
---                                       std_match(IR, OpJMP)  or std_match(IR, OpRJMP) or std_match(IR, OpIJMP) or
---                                       std_match(IR, OpCALL) or std_match(IR, OpRCALL) or std_match(IR, OpICALL) or
---                                       std_match(IR, OpRET)  or std_match(IR, OpRETI)) then
---                -- update if in first clock of two clock instruction
---                CycleCount <= "01";
---            end if;
---            if CycleCount = "01" and ( std_match(IR, OpLDS) or std_match(IR, OpSTS)  or
---                                       std_match(IR, OpJMP) or std_match(IR, OpCALL) or
---                                       std_match(IR, OpRCALL) or std_match(IR, OpICALL) or
---                                       std_match(IR, OpRET) or std_match(IR, OpRETI) or
---                                       (SkipCondition = '1' and TwoWordInstr = '1') ) then
---                -- update if in second clock of three clock instruction
---                CycleCount <= "10";
---            end if;
---            if CycleCount = "10" and ( std_match(IR, OpCALL) or std_match(IR, OpRET) or std_match(IR, OpRETI) ) then
---                -- update if in third clock of four clock instruction
---                CycleCount <= "11";
---        end if;
     end process;
-end InstructionDecoder;
+end InstructionDecoder_Arch;

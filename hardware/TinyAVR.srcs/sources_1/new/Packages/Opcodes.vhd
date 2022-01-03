@@ -62,7 +62,7 @@ package Opcodes is
     constant OpBST      : Opcode_t          := "1111101-----0---";
 
     constant OpCALL     : Opcode_t          := "1001010-----111-";          -- Not implemented (2 clock cycles)
-    constant OpCBI      : Opcode_t          := "10011000--------";
+    constant OpCBI      : Opcode_t          := "10011000--------";          -- Rework
     constant OpCBR      : Opcode_t          := "0111------------";          -- Implemented with ANDI
     constant OpCLC      : Opcode_t          := "1001010010001000";          -- Implemented with BCLR
     constant OpCLH      : Opcode_t          := "1001010011011000";          -- Implemented with BCLR
@@ -90,8 +90,8 @@ package Opcodes is
     constant OpFMULS    : Opcode_t          := "000000111---0---";          -- Not implemented
     constant OpFMULSU   : Opcode_t          := "000000111---1---";          -- Not implemented
 
-    constant OpICALL    : Opcode_t          := "1001010100001001";          -- Not implemented (3 clock cycles)
-    constant OpIJMP     : Opcode_t          := "1001010000001001";          -- Not implemented
+    constant OpICALL    : Opcode_t          := "1001010100001001";
+    constant OpIJMP     : Opcode_t          := "1001010000001001";
     constant OpIN       : Opcode_t          := "10110-----------";
     constant OpINC      : Opcode_t          := "1001010-----0011";
 
@@ -117,6 +117,7 @@ package Opcodes is
     constant OpPUSH     : Opcode_t          := "1001001-----1111";
 
     constant OpRCALL    : Opcode_t          := "1101------------";          -- Not implemented
+    constant OpRET      : Opcode_t          := "1001010100001000";
     -- Rest is missing
     constant OpRJMP     : Opcode_t          := "1100------------";
     constant OpROL      : Opcode_t          := "000111----------";          -- Implemented with ADC
@@ -124,7 +125,7 @@ package Opcodes is
 
     constant OpSBC      : Opcode_t          := "000010----------";
     constant OpSBCI     : Opcode_t          := "0100------------";
-    constant OpSBI      : Opcode_t          := "10011010--------";
+    constant OpSBI      : Opcode_t          := "10011010--------";          -- Rework
     -- Rest is missing
     constant OpSBIW     : Opcode_t          := "10010111--------";
     constant OpSBR      : Opcode_t          := "0110------------";          -- Implemented with ORI

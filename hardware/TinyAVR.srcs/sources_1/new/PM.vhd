@@ -37,8 +37,8 @@ library TinyAVR;
 use TinyAVR.Constants.all;
 
 entity PM is
-    Port (  Address             : in STD_LOGIC_VECTOR(15 downto 0);             -- Program memory address bus
-            Data                : out STD_LOGIC_VECTOR(15 downto 0)             -- Program memory data bus
+    Port (  ProgramAddress      : in STD_LOGIC_VECTOR(15 downto 0);             -- Program memory address bus
+            ProgramData         : out STD_LOGIC_VECTOR(15 downto 0)             -- Program memory data bus
             );
 end PM;
 
@@ -46,7 +46,7 @@ architecture PM_Arch of PM is
 
     type ROM_t is array(0 to ((2 ** (PM_SIZE - 1)) - 1)) of STD_LOGIC_VECTOR(15 downto 0);
 
-    impure function InitRomFromFile (RomFileName : in string) return ROM_t is
+    impure function InitROMFromFile(RomFileName : in string) return ROM_t is
         FILE FileObj            : text is in RomFileName;
         variable RomFileLine    : line;
         variable ROM            : ROM_t                     := (others => (others => '0'));
@@ -59,10 +59,12 @@ architecture PM_Arch of PM is
         return ROM;
     end function;
 
-    signal Memory : ROM_t := InitRomFromFile("../../../../software/AVRASM/Arith-Test.hex");
+    signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Subroutines/Call-Test.hex");
+    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Arith-Test.hex");
+    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Bitmanipulation/Bitmanipulation.hex");
 
 begin
 
-    Data <= Memory(to_integer(UNSIGNED(Address)));
+    ProgramData <= Memory(to_integer(UNSIGNED(ProgramAddress)));
 
 end PM_Arch;
