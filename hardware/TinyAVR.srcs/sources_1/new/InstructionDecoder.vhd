@@ -44,7 +44,7 @@ entity InstructionDecoder is
 
             ALU_Operation   : out ALU_Op_t;                                 -- ALU operation
             ALU_Sel         : out ALU_Src_t;                                -- Select the data source for the ALU
-            
+
             T_Mask          : out STD_LOGIC_VECTOR(7 downto 0);             -- Mask for T Flag (used by BST and BLD)
 
             Register_Sel    : out Sel_t;                                    -- Select the data source for the register file
@@ -77,7 +77,6 @@ end InstructionDecoder;
 architecture InstructionDecoder_Arch of InstructionDecoder is
 
     signal ClockCycle       : INTEGER                           := 0;
-        signal Test        : STD_LOGIC_VECTOR(15 downto 0)     := (others => '0');
 
 begin
 
@@ -87,6 +86,7 @@ begin
         variable RegR           : STD_LOGIC_VECTOR(6 downto 0)      := (others => '0');
         variable ImData         : STD_LOGIC_VECTOR(7 downto 0)      := (others => '0');
         variable SREG_Temp      : STD_LOGIC_VECTOR(7 downto 0)      := (others => '0');
+        variable SRAM_Temp      : STD_LOGIC_VECTOR(7 downto 0)      := (others => '0');
         variable SP_Temp        : STD_LOGIC_VECTOR(15 downto 0)     := (others => '0');
     begin
         PC_Mode         <= PC_INC;                                          -- Default: Increment the Programm Counter
@@ -151,7 +151,6 @@ begin
             ALU_Sel         <= ALU_SRC_IMMEDIATE;
             ImData          := "00" & IR(7 downto 6) & IR(3 downto 0);
 
-            -- Select the register pair
             case IR(5 downto 4) is
                 when "00" =>
                     RegD := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, RegD'length));
@@ -170,16 +169,13 @@ begin
                     Dst := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, Dst'length));
 
                 when others =>
-
             end case;
 
-            -- Add the data byte
             if(ClockCycle = 0) then
                 PC_Mode         <= PC_KEEP;
                 ALU_Operation   <= ALU_OP_ADD;
             end if;
 
-            -- Add the carry
             if(ClockCycle = 1) then
                 ImData          := (others => '0');
                 ALU_Operation   <= ALU_OP_ADC;
@@ -251,6 +247,9 @@ begin
         -- BLD instruction
         --  - Enable write to the SRAM
         --  - Enable the SRAM
+        --  - Select the T-Flag as source
+        --  - Set the ALU operation to "OR"
+        --  - Set the mask for the operation
         if(std_match(IR, OpBLD)) then
             Memory_WE       <= '1';
             Memory_Enable   <= '1';
@@ -303,7 +302,6 @@ begin
             T_Mask                  <= "00000" & IR(2 downto 0);
             SREG_Mask(STATUS_BIT_T) <= '1';
             ALU_Operation           <= ALU_SET_T;
-
         end if;
 
         -- CALL instruction
@@ -312,20 +310,28 @@ begin
 
         -- CBI instruction
         --  - Enable the SRAM
-        --  - Enable write for the SRAM
-        --  - Set the SRAM address
-        --  - Set the bit mask for the bit manipulation
-        --  - Configure the bit manipulation to "SET"
-        --  - Enable bit manipulation
-        --  - Save the data in the SRAM region
+        --  - Set the memory address (the address offset is 32)
+        --  - Set the source for memory reading to the SRAM
+        --  - 1. Clock: Disable the PC
+        --              Disable memory write
+        --              Get the data from memory
+        --  - 2. Clock: Enable memory write
+        --              Set the bit
+        --              Copy the data into the memory
         if(std_match(IR, OpCBI)) then
             Memory_Enable   <= '1';
-            Memory_WE       <= '1';
-            Memory_Address  <= "000" & IR(7 downto 3);
-            --Memory_Mask(to_integer(UNSIGNED(IR(2 downto 0)))) <= '1';
-            --Memory_Set      <= OPT_CLEAR;
-            --Memory_Write    <= OPT_WRITE;
-            --Memory_Source   <= MEM_MEMORY;
+            Memory_Address  <= "001" & IR(7 downto 3);
+            Memory_Source   <= MEM_MEMORY;
+
+            if(ClockCycle = 0) then
+                PC_Mode         <= PC_KEEP;
+                Memory_WE       <= '0';
+                SRAM_Temp       := Memory_Data;
+            elsif(ClockCycle = 1) then
+                Memory_WE       <= '1';
+                SRAM_Temp(to_integer(UNSIGNED(IR(2 downto 0)))) := '0';
+                Memory_Data     <= SRAM_Temp;
+            end if;
         end if;
 
         -- COM instruction
@@ -733,21 +739,29 @@ begin
         end if;
 
         -- SBI instruction
-        --  - Enable write for the SRAM
         --  - Enable the SRAM
-        --  - Set the SRAM address
-        --  - Set the bit mask for the bit manipulation
-        --  - Configure the bit manipulation to "SET"
-        --  - Enable bit manipulation
-        --  - Save the data in the SRAM region
+        --  - Set the memory address (the address offset is 32)
+        --  - Set the source for memory reading to the SRAM
+        --  - 1. Clock: Disable the PC
+        --              Disable memory write
+        --              Get the data from memory
+        --  - 2. Clock: Enable memory write
+        --              Set the bit
+        --              Copy the data into the memory
         if(std_match(IR, OpSBI)) then
-            Memory_WE       <= '1';
             Memory_Enable   <= '1';
-            Memory_Address  <= "000" & IR(7 downto 3);
-            --Memory_Mask(to_integer(UNSIGNED(IR(2 downto 0)))) <= '1';
-            --Memory_Set      <= OPT_SET;
-            --Memory_Write    <= OPT_WRITE;
+            Memory_Address  <= "001" & IR(7 downto 3);
             Memory_Source   <= MEM_MEMORY;
+
+            if(ClockCycle = 0) then
+                PC_Mode         <= PC_KEEP;
+                Memory_WE       <= '0';
+                SRAM_Temp       := Memory_Data;
+            elsif(ClockCycle = 1) then
+                Memory_WE       <= '1';
+                SRAM_Temp(to_integer(UNSIGNED(IR(2 downto 0)))) := '1';
+                Memory_Data     <= SRAM_Temp;
+            end if;
         end if;
 
         -- SBIW instruction
@@ -773,21 +787,16 @@ begin
                 when "00" =>
                     RegD := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, RegD'length));
                     Dst := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, Dst'length));
-
                 when "01" =>
                     RegD := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, RegD'length));
                     Dst := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, Dst'length));
-
                 when "10" =>
                     RegD := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, RegD'length));
                     Dst := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, Dst'length));
-
                 when "11" =>
                     RegD := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, RegD'length));
                     Dst := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, Dst'length));
-
                 when others =>
-
             end case;
 
             -- Add the data byte
@@ -874,7 +883,6 @@ begin
         RegDAddr <= RegD;
         RegRAddr <= RegR;
         Immediate <= ImData;
-
     end process;
 
     -- Keep track of the cycles for each instruction
@@ -888,7 +896,7 @@ begin
         if((ClockCycle = 0) and (std_match(IR, OpMUL) or std_match(IR, OpADIW) or std_match(IR, OpSBIW) or std_match(IR, OpSTS) or 
                                  std_match(IR, OpJMP) or std_match(IR, OpRJMP) or std_match(IR, OpIJMP) or 
                                  std_match(IR, OpRCALL) or std_match(IR, OpICALL) or std_match(IR, OpPOP) or std_match(IR, OpPUSH) or
-                                 std_match(IR, OpRET)
+                                 std_match(IR, OpRET) or std_match(IR, OpSBI) or std_match(IR, OpCBI)
                                  )) then
             ClockCycle <= 1;
         elsif((ClockCycle = 1) and (std_match(IR, OpRCALL) or std_match(IR, OpICALL) or std_match(IR, OpRET))) then

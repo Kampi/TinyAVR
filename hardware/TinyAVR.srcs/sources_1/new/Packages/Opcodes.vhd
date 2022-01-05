@@ -61,8 +61,8 @@ package Opcodes is
     constant OpBSET     : Opcode_t          := "100101000---1000";
     constant OpBST      : Opcode_t          := "1111101-----0---";
 
-    constant OpCALL     : Opcode_t          := "1001010-----111-";          -- Not implemented (2 clock cycles)
-    constant OpCBI      : Opcode_t          := "10011000--------";          -- Rework
+    constant OpCALL     : Opcode_t          := "1001010-----111-";          -- Not available in all devices
+    constant OpCBI      : Opcode_t          := "10011000--------";
     constant OpCBR      : Opcode_t          := "0111------------";          -- Implemented with ANDI
     constant OpCLC      : Opcode_t          := "1001010010001000";          -- Implemented with BCLR
     constant OpCLH      : Opcode_t          := "1001010011011000";          -- Implemented with BCLR
@@ -81,22 +81,26 @@ package Opcodes is
 
     constant OpDEC      : Opcode_t          := "1001010-----1010";
 
-    constant OpEICALL   : Opcode_t          := "1001010100011001";          -- Not implemented (3 clock cycles)
-    constant OpEIJMP    : Opcode_t          := "1001010000011001";          -- Not implemented (2 clock cycles)
+    constant OpEICALL   : Opcode_t          := "1001010100011001";          -- Not available in all devices
+    constant OpEIJMP    : Opcode_t          := "1001010000011001";          -- Not available in all devices
     constant OpELPM     : Opcode_t          := "----------------";          -- Not implemented
     constant OpEOR      : Opcode_t          := "001001----------";
 
-    constant OpFMUL     : Opcode_t          := "000000110---1---";          -- Not implemented
-    constant OpFMULS    : Opcode_t          := "000000111---0---";          -- Not implemented
-    constant OpFMULSU   : Opcode_t          := "000000111---1---";          -- Not implemented
+    constant OpFMUL     : Opcode_t          := "000000110---1---";          -- Not available in all devices
+    constant OpFMULS    : Opcode_t          := "000000111---0---";          -- Not available in all devices
+    constant OpFMULSU   : Opcode_t          := "000000111---1---";          -- Not available in all devices
 
     constant OpICALL    : Opcode_t          := "1001010100001001";
     constant OpIJMP     : Opcode_t          := "1001010000001001";
     constant OpIN       : Opcode_t          := "10110-----------";
     constant OpINC      : Opcode_t          := "1001010-----0011";
 
-    constant OpJMP      : Opcode_t          := "1001010-----110-";          -- Not implemented (only available on 18 bit address space)
+    constant OpJMP      : Opcode_t          := "1001010-----110-";          -- Not available in all devices
 
+    -- Rest is missing
+    constant OpLAC      : Opcode_t          := "1001001-----0110";          -- Not implemented
+    constant OpLAS      : Opcode_t          := "1001001-----0101";          -- Not implemented
+    constant OpLAT      : Opcode_t          := "1001001-----0111";          -- Not implemented
     -- Rest is missing
     constant OpLDI      : Opcode_t          := "1110------------";
 
@@ -118,18 +122,20 @@ package Opcodes is
 
     constant OpRCALL    : Opcode_t          := "1101------------";          -- Not implemented
     constant OpRET      : Opcode_t          := "1001010100001000";
-    -- Rest is missing
+    constant OpRETI     : Opcode_t          := "1001010100011000";          -- Not implemented
     constant OpRJMP     : Opcode_t          := "1100------------";
     constant OpROL      : Opcode_t          := "000111----------";          -- Implemented with ADC
     constant OpROR      : Opcode_t          := "1001010-----0111";
 
     constant OpSBC      : Opcode_t          := "000010----------";
     constant OpSBCI     : Opcode_t          := "0100------------";
-    constant OpSBI      : Opcode_t          := "10011010--------";          -- Rework
-    -- Rest is missing
+    constant OpSBI      : Opcode_t          := "10011010--------";
+    constant OpSBIC     : Opcode_t          := "10011001--------";          -- Not implemented
+    constant OpSBIS     : Opcode_t          := "10011011--------";          -- Not implemented
     constant OpSBIW     : Opcode_t          := "10010111--------";
     constant OpSBR      : Opcode_t          := "0110------------";          -- Implemented with ORI
-    -- Rest is missing
+    constant OpSBRC     : Opcode_t          := "1111110-----0---";          -- Not implemented
+    constant OpSBRS     : Opcode_t          := "1111111-----0---";          -- Not implemented
     constant OpSEC      : Opcode_t          := "1001010000001000";          -- Implemented with BSET
     constant OpSEH      : Opcode_t          := "1001010001011000";          -- Implemented with BSET
     constant OpSEI      : Opcode_t          := "1001010001111000";          -- Implemented with BSET
