@@ -23,7 +23,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx leaf cells in this code.
@@ -53,9 +53,6 @@ architecture Core_Arch of Core is
     signal Z                    : STD_LOGIC_VECTOR(15 downto 0);
     signal IR                   : STD_LOGIC_VECTOR(15 downto 0);
     signal ProgData             : STD_LOGIC_VECTOR(15 downto 0);
-    signal ProgAddr             : STD_LOGIC_VECTOR(15 downto 0);
-    signal PC_Offset            : STD_LOGIC_VECTOR(11 downto 0);
-    signal PC_Addr              : STD_LOGIC_VECTOR(15 downto 0);
     signal T_Mask               : STD_LOGIC_VECTOR(7 downto 0);
     signal Stack                : STD_LOGIC_VECTOR(7 downto 0);
     signal Memory               : STD_LOGIC_VECTOR(7 downto 0);
@@ -71,6 +68,10 @@ architecture Core_Arch of Core is
     signal StackPointerIn       : STD_LOGIC_VECTOR(15 downto 0);
     signal StackPointerOut      : STD_LOGIC_VECTOR(15 downto 0);
 
+    signal PCOffset             : SIGNED(11 downto 0);
+    signal ProgAddr             : UNSIGNED(15 downto 0);
+    signal PCAddr               : UNSIGNED(15 downto 0);
+
     signal PC_Mode              : PC_Mode_t;
     signal Register_Sel         : Sel_t;
     signal ALU_Sel              : ALU_Src_t;
@@ -82,17 +83,17 @@ architecture Core_Arch of Core is
         Port (  Clock           : in STD_LOGIC;
                 nReset          : in STD_LOGIC;
                 Mode            : in PC_Mode_t;
-                Addr_Offset     : in STD_LOGIC_VECTOR(11 downto 0);
+                Addr_Offset     : in SIGNED(11 downto 0);
                 Z               : in STD_LOGIC_VECTOR(15 downto 0);
-                Addr            : in STD_LOGIC_VECTOR(15 downto 0); 
-                Prog_Addr       : out STD_LOGIC_VECTOR(15 downto 0);
+                Addr            : in UNSIGNED(15 downto 0);
+                Prog_Addr       : out UNSIGNED(15 downto 0);
                 Prog_Mem        : in STD_LOGIC_VECTOR(15 downto 0);
                 IR              : out STD_LOGIC_VECTOR(15 downto 0)
                 );
     end component;
 
     component PM is
-        Port (  ProgramAddress  : in STD_LOGIC_VECTOR(15 downto 0);
+        Port (  ProgramAddress  : in UNSIGNED(15 downto 0);
                 ProgramData     : out STD_LOGIC_VECTOR(15 downto 0)
                 );
     end component;
@@ -154,10 +155,10 @@ architecture Core_Arch of Core is
                 SREG            : in STD_LOGIC_VECTOR(7 downto 0);
                 StackPointerIn  : in STD_LOGIC_VECTOR(15 downto 0);
                 StackPointerOut : out STD_LOGIC_VECTOR(15 downto 0);
-                PC              : in STD_LOGIC_VECTOR(15 downto 0);
-                PC_Addr         : out STD_LOGIC_VECTOR(15 downto 0);
+                PC              : in UNSIGNED(15 downto 0);
+                PC_Addr         : out UNSIGNED(15 downto 0);
                 PC_Mode         : out PC_Mode_t;
-                PC_Offset       : out STD_LOGIC_VECTOR(11 downto 0)
+                PC_Offset       : out SIGNED(11 downto 0)
                 );
     end component;
 
@@ -187,8 +188,8 @@ begin
                                             Prog_Mem => ProgData,
                                             IR => IR,
                                             Mode => PC_Mode,
-                                            Addr_Offset => PC_Offset,
-                                            Addr => PC_Addr,
+                                            Addr_Offset => PCOffset,
+                                            Addr => PCAddr,
                                             Z => Z,
                                             Prog_Addr => ProgAddr
                                             );
@@ -241,9 +242,9 @@ begin
                                                             ALU_Sel => ALU_Sel,
                                                             ALU_Operation => ALU_Operation,
                                                             PC => ProgAddr,
-                                                            PC_Addr => PC_Addr,
+                                                            PC_Addr => PCAddr,
                                                             PC_Mode => PC_Mode,
-                                                            PC_Offset => PC_Offset,
+                                                            PC_Offset => PCOffset,
                                                             SREG_Mask => SREG_Mask,
                                                             SREG => SREG,
                                                             Memory_Data => Memory,

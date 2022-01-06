@@ -40,12 +40,12 @@ entity PC is
             nReset          : in STD_LOGIC;                                 -- Reset (active low)
             Mode            : in PC_Mode_t;                                 -- Update source for the Programm Counter
 
-            Addr_Offset     : in STD_LOGIC_VECTOR(11 downto 0);             -- Address offset for the Programm Counter
+            Addr_Offset     : in SIGNED(11 downto 0);                       -- Address offset for the Programm Counter
             Z               : in STD_LOGIC_VECTOR(15 downto 0);             -- Address input from Z register
-            Addr            : in STD_LOGIC_VECTOR(15 downto 0);             -- Address input for the Program Counter
+            Addr            : in UNSIGNED(15 downto 0);                     -- Address input for the Program Counter
 
-            Prog_Addr       : out STD_LOGIC_VECTOR(15 downto 0);            -- Programm address output
-            Prog_Mem         : in STD_LOGIC_VECTOR(15 downto 0);            -- Programm memory
+            Prog_Addr       : out UNSIGNED(15 downto 0);                    -- Programm address output
+            Prog_Mem        : in STD_LOGIC_VECTOR(15 downto 0);             -- Programm memory
 
             IR              : out STD_LOGIC_VECTOR(15 downto 0)             -- Instruction register
             );
@@ -53,7 +53,7 @@ end PC;
 
 architecture PC_Arch of PC is
 
-    signal PC               : STD_LOGIC_VECTOR(15 downto 0)             := (others => '0');
+    signal PC               : UNSIGNED(15 downto 0)                 := (others => '0');
 
 begin
 
@@ -67,10 +67,10 @@ begin
 
         case Mode is
             when PC_INC =>
-                PC <= STD_LOGIC_VECTOR(SIGNED(PC) + SIGNED(Addr_Offset));
+                PC <= UNSIGNED(to_unsigned(to_integer(SIGNED(PC)) + to_integer(Addr_Offset), PC'length));
 
             when PC_Z_REG =>
-                PC <= Z;
+                PC <= UNSIGNED(Z);
 
             when PC_KEEP =>
                 PC <= PC;

@@ -12,12 +12,12 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="100000fs"></ZoomStartTime>
-      <ZoomEndTime time="261601fs"></ZoomEndTime>
-      <Cursor1Time time="161000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="164801fs"></ZoomEndTime>
+      <Cursor1Time time="65200fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="162"></NameColumnWidth>
+      <NameColumnWidth column_width="146"></NameColumnWidth>
       <ValueColumnWidth column_width="58"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="13" />
@@ -68,17 +68,26 @@
    <wvobject fp_name="group8909" type="group">
       <obj_property name="label">PC</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <wvobject fp_name="/TinyAVR_TB/UUT/PC_i/Mode" type="array">
-         <obj_property name="ElementShortName">Mode[1:0]</obj_property>
-         <obj_property name="ObjectShortName">Mode[1:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/TinyAVR_TB/UUT/PC_i/PC" type="array">
+         <obj_property name="ElementShortName">PC[15:0]</obj_property>
+         <obj_property name="ObjectShortName">PC[15:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/TinyAVR_TB/UUT/PC_i/IR" type="array">
          <obj_property name="ElementShortName">IR[15:0]</obj_property>
          <obj_property name="ObjectShortName">IR[15:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/PC_i/PC" type="array">
-         <obj_property name="ElementShortName">PC[15:0]</obj_property>
-         <obj_property name="ObjectShortName">PC[15:0]</obj_property>
+      <wvobject fp_name="/TinyAVR_TB/UUT/PC_i/Mode" type="array">
+         <obj_property name="ElementShortName">Mode[1:0]</obj_property>
+         <obj_property name="ObjectShortName">Mode[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/PC_i/Addr_Offset" type="array">
+         <obj_property name="ElementShortName">Addr_Offset[11:0]</obj_property>
+         <obj_property name="ObjectShortName">Addr_Offset[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/PC_i/Addr" type="array">
+         <obj_property name="ElementShortName">Addr[15:0]</obj_property>
+         <obj_property name="ObjectShortName">Addr[15:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/TinyAVR_TB/UUT/PC_i/Z" type="array">
          <obj_property name="ElementShortName">Z[15:0]</obj_property>
@@ -88,13 +97,14 @@
    <wvobject fp_name="group11" type="group">
       <obj_property name="label">Instruction Decoder</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/TinyAVR_TB/UUT/Ctrl_i/ClockCycle" type="other">
          <obj_property name="ElementShortName">ClockCycle</obj_property>
          <obj_property name="ObjectShortName">ClockCycle</obj_property>
       </wvobject>
       <wvobject fp_name="/TinyAVR_TB/UUT/Ctrl_i/Memory_Address" type="array">
-         <obj_property name="ElementShortName">Memory_Address[5:0]</obj_property>
-         <obj_property name="ObjectShortName">Memory_Address[5:0]</obj_property>
+         <obj_property name="ElementShortName">Memory_Address[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Memory_Address[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/TinyAVR_TB/UUT/Ctrl_i/Memory_Data" type="array">
          <obj_property name="ElementShortName">Memory_Data[7:0]</obj_property>
@@ -108,13 +118,13 @@
          <obj_property name="ElementShortName">StackPointerOut[15:0]</obj_property>
          <obj_property name="ObjectShortName">StackPointerOut[15:0]</obj_property>
       </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Ctrl_i/Test" type="array">
-         <obj_property name="ElementShortName">Test[15:0]</obj_property>
-         <obj_property name="ObjectShortName">Test[15:0]</obj_property>
-      </wvobject>
       <wvobject fp_name="/TinyAVR_TB/UUT/Ctrl_i/PC_Addr" type="array">
          <obj_property name="ElementShortName">PC_Addr[15:0]</obj_property>
          <obj_property name="ObjectShortName">PC_Addr[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Ctrl_i/SREG" type="array">
+         <obj_property name="ElementShortName">SREG[7:0]</obj_property>
+         <obj_property name="ObjectShortName">SREG[7:0]</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="group292" type="group">
@@ -144,6 +154,10 @@
    <wvobject fp_name="group299" type="group">
       <obj_property name="label">ALU</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TinyAVR_TB/UUT/ALU_i/Sel" type="array">
+         <obj_property name="ElementShortName">Sel[1:0]</obj_property>
+         <obj_property name="ObjectShortName">Sel[1:0]</obj_property>
+      </wvobject>
       <wvobject fp_name="/TinyAVR_TB/UUT/ALU_i/Operation" type="array">
          <obj_property name="ElementShortName">Operation[4:0]</obj_property>
          <obj_property name="ObjectShortName">Operation[4:0]</obj_property>
@@ -155,6 +169,38 @@
       <wvobject fp_name="/TinyAVR_TB/UUT/ALU_i/OperandB" type="array">
          <obj_property name="ElementShortName">OperandB[7:0]</obj_property>
          <obj_property name="ObjectShortName">OperandB[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="group150" type="group">
+         <obj_property name="label">Mult</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/TinyAVR_TB/UUT/ALU_i/MultInst/A" type="array">
+            <obj_property name="ElementShortName">A[7:0]</obj_property>
+            <obj_property name="ObjectShortName">A[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/ALU_i/MultInst/B" type="array">
+            <obj_property name="ElementShortName">B[7:0]</obj_property>
+            <obj_property name="ObjectShortName">B[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/ALU_i/MultInst/Operation" type="array">
+            <obj_property name="ElementShortName">Operation[4:0]</obj_property>
+            <obj_property name="ObjectShortName">Operation[4:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/ALU_i/MultInst/C" type="logic">
+            <obj_property name="ElementShortName">C</obj_property>
+            <obj_property name="ObjectShortName">C</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/ALU_i/MultInst/R" type="array">
+            <obj_property name="ElementShortName">R[7:0]</obj_property>
+            <obj_property name="ObjectShortName">R[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/ALU_i/MultInst/Partial" type="array">
+            <obj_property name="ElementShortName">Partial[13:0]</obj_property>
+            <obj_property name="ObjectShortName">Partial[13:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/ALU_i/MultInst/Transfer" type="array">
+            <obj_property name="ElementShortName">Transfer[5:0]</obj_property>
+            <obj_property name="ObjectShortName">Transfer[5:0]</obj_property>
+         </wvobject>
       </wvobject>
       <wvobject fp_name="group759" type="group">
          <obj_property name="label">Arithmetic</obj_property>
@@ -260,7 +306,6 @@
    <wvobject fp_name="group3062" type="group">
       <obj_property name="label">SRAM</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/Source" type="array">
          <obj_property name="ElementShortName">Source[2:0]</obj_property>
          <obj_property name="ObjectShortName">Source[2:0]</obj_property>
@@ -278,8 +323,8 @@
          <obj_property name="ObjectShortName">RAM[0:4095][7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/Address" type="array">
-         <obj_property name="ElementShortName">Address[5:0]</obj_property>
-         <obj_property name="ObjectShortName">Address[5:0]</obj_property>
+         <obj_property name="ElementShortName">Address[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Address[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/Data" type="array">
          <obj_property name="ElementShortName">Data[7:0]</obj_property>

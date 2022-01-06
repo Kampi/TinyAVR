@@ -55,16 +55,16 @@ entity InstructionDecoder is
             Register_WE     : out STD_LOGIC;                                -- Register file write enable signal
             Register_Pair   : out STD_LOGIC;                                -- Copy register pair (used by MOVW) 
 
-            Memory_Data     : inout STD_LOGIC_VECTOR(7 downto 0);           --
+            Memory_Data     : inout STD_LOGIC_VECTOR(7 downto 0);           -- SRAM data bus
             Memory_WE       : out STD_LOGIC;                                -- SRAM write enable signal
             Memory_Enable   : out STD_LOGIC;                                -- SRAM enable signal
             Memory_Address  : out STD_LOGIC_VECTOR(7 downto 0);             -- SRAM memory address
             Memory_Source   : out Sram_Source_t;                            -- SRAM data source
 
-            PC              : in STD_LOGIC_VECTOR(15 downto 0);             -- Program address from programm counter
-            PC_Addr         : out STD_LOGIC_VECTOR(15 downto 0);            -- Program address for programm counter
-            PC_Mode         : out PC_Mode_t;                                -- Program counter mode
-            PC_Offset       : out STD_LOGIC_VECTOR(11 downto 0);            -- Address offset for the Programm Counter
+            PC              : in UNSIGNED(15 downto 0);                     -- Program address from Programm Counter
+            PC_Addr         : out UNSIGNED(15 downto 0);                    -- Program address for Programm Counter
+            PC_Mode         : out PC_Mode_t;                                -- Program Counter mode
+            PC_Offset       : out SIGNED(11 downto 0);                      -- Address offset for the Programm Counter
 
             StackPointerIn  : in STD_LOGIC_VECTOR(15 downto 0);             -- Stack pointer input
             StackPointerOut : out STD_LOGIC_VECTOR(15 downto 0);            -- Stack pointer output
@@ -78,6 +78,8 @@ architecture InstructionDecoder_Arch of InstructionDecoder is
 
     signal ClockCycle       : INTEGER                           := 0;
 
+    signal Branch           : STD_LOGIC                         := '0';
+
 begin
 
     DecodeInstruction: process(IR, nReset, ClockCycle, SREG, StackPointerIn, Memory_Data, PC)
@@ -90,7 +92,7 @@ begin
         variable SP_Temp        : STD_LOGIC_VECTOR(15 downto 0)     := (others => '0');
     begin
         PC_Mode         <= PC_INC;                                          -- Default: Increment the Programm Counter
-        PC_Offset       <= STD_LOGIC_VECTOR(TO_SIGNED(1, PC_Offset'length));-- Default: Step size is 1
+        PC_Offset       <= to_signed(1, PC_Offset'length);                  -- Default: Step size is 1
         SREG_Mask       <= (others => '0');                                 -- Default: Don´t mask any status bits
         ALU_Operation   <= ALU_OP_NOP;                                      -- Default: No operation by the ALU
         ALU_Sel         <= ALU_SRC_REG;                                     -- Default: Set register R as input for the ALU
@@ -102,6 +104,7 @@ begin
         Memory_Address  <= (others => '0');                                 -- Default: Set memory address to SREG
         Memory_Source   <= MEM_SREG;                                        -- Default: Update the SREG
         Memory_Data     <= (others => 'Z');                                 -- Default: Don´t use the memory bus
+        Branch          <= '0';                                             -- Default: No branch condition
 
         Dst             := "00" & IR(8 downto 4);                           -- Default: Get the destination register address from the instruction
         RegD            := "00" & IR(8 downto 4);                           -- Default: Get the Register D address from the instruction
@@ -149,25 +152,21 @@ begin
             Memory_Enable   <= '1';
             SREG_Mask       <= STATUS_FLAG_SVNZC;
             ALU_Sel         <= ALU_SRC_IMMEDIATE;
-            ImData          := "00" & IR(7 downto 6) & IR(3 downto 0);
+            ImData          := STD_LOGIC_VECTOR(resize(UNSIGNED(IR(7 downto 6) & IR(3 downto 0)), ImData'length));
 
             case IR(5 downto 4) is
                 when "00" =>
-                    RegD := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, RegD'length));
-                    Dst := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, Dst'length));
-
+                    RegD    := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, RegD'length));
+                    Dst     := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, Dst'length));
                 when "01" =>
-                    RegD := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, RegD'length));
-                    Dst := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, Dst'length));
-
+                    RegD    := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, RegD'length));
+                    Dst     := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, Dst'length));
                 when "10" =>
-                    RegD := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, RegD'length));
-                    Dst := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, Dst'length));
-
+                    RegD    := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, RegD'length));
+                    Dst     := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, Dst'length));
                 when "11" =>
-                    RegD := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, RegD'length));
-                    Dst := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, Dst'length));
-
+                    RegD    := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, RegD'length));
+                    Dst     := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, Dst'length));
                 when others =>
             end case;
 
@@ -255,15 +254,45 @@ begin
             Memory_Enable   <= '1';
             ALU_Sel         <= ALU_SRC_T_REG;
             ALU_Operation   <= ALU_OP_OR;
-            T_Mask          <= "00000" & IR(2 downto 0);
+            T_Mask          <= STD_LOGIC_VECTOR(resize(UNSIGNED(IR(2 downto 0)), T_Mask'length));
         end if;
 
         -- BRBC instruction
+        --  - Disable write to the register file
+        --  - 1. Clock: 
+        --      If masked bit is cleared:
+        --          Set the PC to the current address plus the offset
+        --      - 2. Clock: Run the PC
         if(std_match(IR, OpBRBC)) then
+            Register_WE         <= '0';
+
+            if(ClockCycle = 0) then
+                if(SREG(to_integer(UNSIGNED(IR(2 downto 0)))) = '0') then
+                    PC_Mode     <= PC_SET;
+                    PC_Addr     <= to_unsigned(to_integer(PC) + to_integer(SIGNED(IR(9 downto 3))), PC_Addr'length);
+                    Branch      <= '1';
+                end if;
+            elsif(ClockCycle = 1) then
+            end if;
         end if;
 
         -- BRBS instruction
+        --  - Disable write to the register file
+        --  - 1. Clock: 
+        --      If masked bit is set:
+        --          Set the PC to the current address plus the offset
+        --      - 2. Clock: Run the PC
         if(std_match(IR, OpBRBS)) then
+            Register_WE         <= '0';
+
+            if(ClockCycle = 0) then
+                if(SREG(to_integer(UNSIGNED(IR(2 downto 0)))) = '0') then
+                    PC_Mode     <= PC_SET;
+                    PC_Addr     <= to_unsigned(to_integer(PC) + to_integer(SIGNED(IR(9 downto 3))), PC_Addr'length);
+                    Branch      <= '1';
+                end if;
+            elsif(ClockCycle = 1) then
+            end if;
         end if;
 
         -- BREAK instruction
@@ -296,10 +325,10 @@ begin
         --  - Enable writing of the T Flag
         --  - Set the ALU operation to "SET T FLAG"
         if(std_match(IR, OpBST)) then
-            Memory_Enable   <= '1';
-            Memory_WE       <= '1';
+            Memory_Enable           <= '1';
+            Memory_WE               <= '1';
             Register_WE             <= '0';
-            T_Mask                  <= "00000" & IR(2 downto 0);
+            T_Mask                  <= STD_LOGIC_VECTOR(resize(UNSIGNED(IR(2 downto 0)), T_Mask'length));
             SREG_Mask(STATUS_BIT_T) <= '1';
             ALU_Operation           <= ALU_SET_T;
         end if;
@@ -429,7 +458,6 @@ begin
         -- ICALL instruction
         --  - Disable write for the register file
         --  - 1. Clock: Hold the PC
-        --              Set the ALU operation to "ADC"
         --              Enable the SRAM
         --              Enable write to the SRAM
         --              Set the destination for the SRAM to Memory
@@ -441,7 +469,7 @@ begin
         --              Set the destination for the SRAM to stack pointer
         --              Set the stack pointer to the current stack pointer minus 2 
         if(std_match(IR, OpICALL)) then
-            Register_WE     <= '0';
+            Register_WE         <= '0';
 
             if(ClockCycle = 0) then
                 PC_Mode         <= PC_KEEP;
@@ -470,7 +498,6 @@ begin
             if(ClockCycle = 0) then
                 PC_Mode     <= PC_Z_REG;
             elsif(ClockCycle = 1) then
-                PC_Mode     <= PC_INC;
             end if;
         end if;
 
@@ -482,7 +509,7 @@ begin
         if(std_match(IR, OpIN)) then
             Register_Sel    <= SRC_MEMORY;
             Memory_Enable   <= '1';
-            Memory_Address  <= "00" & IR(10 downto 9) & IR(3 downto 0);
+            Memory_Address  <= STD_LOGIC_VECTOR(resize(UNSIGNED(IR(10 downto 9) & IR(3 downto 0)), Memory_Address'length));
             Memory_Source   <= MEM_MEMORY;
         end if;
 
@@ -533,11 +560,49 @@ begin
         end if;
 
         -- MUL instruction
+        --  - Flag the changeable status flags
+        --  - 1. Clock: Hold the PC
+        --              Set the ALU operation to "MUL_LOW"
+        --              Set the destination register to R0
+        --              Enable the Carry-Flag to update
+        --  - 2. Clock: Set the ALU operation to "MUL_HIGH"
+        --              Set the destination register to R1
+        --              Enable the Zero-Flag to update
         if(std_match(IR, OpMUL)) then
+            if(ClockCycle = 0) then
+                PC_Mode         <= PC_KEEP;
+                ALU_Operation   <= ALU_OP_MUL_LOW_U;
+                Dst             := (others => '0');
+                SREG_Mask       <= STATUS_FLAG_C;
+            elsif(ClockCycle = 1) then
+                ALU_Operation   <= ALU_OP_MUL_HIGH_U;
+                Dst             := ((0) => '1', others => '0');
+                SREG_Mask       <= STATUS_FLAG_Z;
+            end if;
         end if;
 
         -- MULS instruction
+        --  - Flag the changeable status flags
+        --  - 1. Clock: Hold the PC
+        --              Set the ALU operation to low byte multiplication
+        --              Set the destination register to R0
+        --              Enable the Carry-Flag to update
+        --  - 2. Clock: Set the ALU operation to high byte multiplication
+        --              Set the destination register to R1
+        --              Enable the Zero-Flag to update
         if(std_match(IR, OpMULS)) then
+            RegD                := "001" & IR(7 downto 4);
+            RegR                := "001" & IR(3 downto 0);
+            if(ClockCycle = 0) then
+                PC_Mode         <= PC_KEEP;
+                ALU_Operation   <= ALU_OP_MUL_LOW_S;
+                Dst             := (others => '0');
+                SREG_Mask       <= STATUS_FLAG_C;
+            elsif(ClockCycle = 1) then
+                ALU_Operation   <= ALU_OP_MUL_HIGH_S;
+                Dst             := ((0) => '1', others => '0');
+                SREG_Mask       <= STATUS_FLAG_Z;
+            end if;
         end if;
 
         -- MULSU instruction
@@ -594,7 +659,7 @@ begin
             Register_WE     <= '0';
             Memory_Enable   <= '1';
             Memory_WE       <= '1';
-            Memory_Address  <= "00" & IR(10 downto 9) & IR(3 downto 0);
+            Memory_Address  <= STD_LOGIC_VECTOR(resize(UNSIGNED(IR(10 downto 9) & IR(3 downto 0)), Memory_Address'length));
             Memory_Source   <= MEM_REG;
         end if;
 
@@ -610,7 +675,7 @@ begin
         --              Disable memory write
         --              Set the memory address to the current stack pointer
         if(std_match(IR, OpPOP)) then
-            Memory_Enable   <= '1';
+            Memory_Enable       <= '1';
 
             if(ClockCycle = 0) then
                 Register_WE     <= '0';
@@ -636,12 +701,12 @@ begin
         --  - 2. Clock: Set the stack pointer as input source for the SRAM
         --              Write the new stack pointer into the SRAM
         if(std_match(IR, OpPUSH)) then
-            Register_WE     <= '0';
-            Memory_Enable   <= '1';
-            Memory_WE       <= '1';
+            Register_WE         <= '0';
+            Memory_Enable       <= '1';
+            Memory_WE           <= '1';
 
             if(ClockCycle = 0) then
-                RegD            := "00" & IR(8 downto 4);
+                RegD            := STD_LOGIC_VECTOR(resize(UNSIGNED(IR(8 downto 4)), RegD'length));
                 PC_Mode         <= PC_KEEP;
                 Memory_Source   <= MEM_REG;
                 Memory_Address  <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(StackPointerIn)), Memory_Address'length));
@@ -656,29 +721,43 @@ begin
         end if;
 
         -- RET instruction
+        --  - Enable the SRAM
         --  - 1. Clock: Hold the PC
+        --              Enable write to the SRAM
+        --              Set the stack pointer as destination
+        --              Write the new stack pointer (increased by two) into the SRAM
+        --  - 2. Clock: Hold the PC
+        --              Disable memory write
+        --              Set the memory as destination
+        --              Get the first byte of the memory address from stack
+        --              Get the first byte of the return address
+        --  - 3. Clock: Set the PC
+        --              Disable memory write
+        --              Set the memory as destination
+        --              Get the second byte of the memory address from stack
+        --              Get the second byte of the return address
+        --  - 4. Clock  Return program execution
         if(std_match(IR, OpRET)) then
+            Memory_Enable       <= '1';
+
             if(ClockCycle = 0) then
                 PC_Mode         <= PC_KEEP;
-                Memory_Enable   <= '1';
                 Memory_WE       <= '1';
                 Memory_Source   <= MEM_SP;
                 StackPointerOut <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(StackPointerIn)) + 2, StackPointerOut'length));
             elsif(ClockCycle = 1) then
                 PC_Mode         <= PC_KEEP;
-                Memory_Enable   <= '1';
                 Memory_WE       <= '0';
                 Memory_Source   <= MEM_MEMORY;
                 Memory_Address  <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(StackPointerIn)) - 0, Memory_Address'length));
                 SP_Temp         := Memory_Data & "00000000";
             elsif(ClockCycle = 2) then
                 PC_Mode         <= PC_SET;
-                Memory_Enable   <= '1';
                 Memory_WE       <= '0';
                 Memory_Source   <= MEM_MEMORY;
                 Memory_Address  <= STD_LOGIC_VECTOR(to_unsigned(to_integer(UNSIGNED(StackPointerIn)) - 1, Memory_Address'length));
                 SP_Temp         := Memory_Data & SP_Temp(15 downto 8);
-                PC_Addr         <= SP_Temp;
+                PC_Addr         <= UNSIGNED(SP_Temp);
             elsif(ClockCycle = 3) then
             end if;
         end if;
@@ -692,7 +771,7 @@ begin
             Register_WE     <= '0';
 
             if(ClockCycle = 0) then
-                PC_Offset <= IR(11 downto 0);
+                PC_Offset <= SIGNED(IR(11 downto 0));
             elsif(ClockCycle = 1) then
             end if;
         end if;
@@ -749,9 +828,9 @@ begin
         --              Set the bit
         --              Copy the data into the memory
         if(std_match(IR, OpSBI)) then
-            Memory_Enable   <= '1';
-            Memory_Address  <= "001" & IR(7 downto 3);
-            Memory_Source   <= MEM_MEMORY;
+            Memory_Enable       <= '1';
+            Memory_Address      <= "001" & IR(7 downto 3);
+            Memory_Source       <= MEM_MEMORY;
 
             if(ClockCycle = 0) then
                 PC_Mode         <= PC_KEEP;
@@ -780,34 +859,28 @@ begin
             Memory_Enable   <= '1';
             SREG_Mask       <= STATUS_FLAG_SVNZC;
             ALU_Sel         <= ALU_SRC_IMMEDIATE;
-            ImData          := "00" & IR(7 downto 6) & IR(3 downto 0);
+            ImData          := STD_LOGIC_VECTOR(resize(UNSIGNED(IR(7 downto 6) & IR(3 downto 0)), ImData'length));
 
-            -- Select the register pair
             case IR(5 downto 4) is
                 when "00" =>
-                    RegD := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, RegD'length));
-                    Dst := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, Dst'length));
+                    RegD    := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, RegD'length));
+                    Dst     := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, Dst'length));
                 when "01" =>
-                    RegD := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, RegD'length));
-                    Dst := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, Dst'length));
+                    RegD    := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, RegD'length));
+                    Dst     := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, Dst'length));
                 when "10" =>
-                    RegD := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, RegD'length));
-                    Dst := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, Dst'length));
+                    RegD    := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, RegD'length));
+                    Dst     := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, Dst'length));
                 when "11" =>
-                    RegD := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, RegD'length));
-                    Dst := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, Dst'length));
+                    RegD    := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, RegD'length));
+                    Dst     := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, Dst'length));
                 when others =>
             end case;
 
-            -- Add the data byte
             if(ClockCycle = 0) then
-                ALU_Operation   <= ALU_OP_SUB;
                 PC_Mode         <= PC_KEEP;
-                PC_Offset       <= STD_LOGIC_VECTOR(to_signed(0, 12));
-            end if;
-
-            -- Add the carry
-            if(ClockCycle = 1) then 
+                ALU_Operation   <= ALU_OP_SUB;
+            elsif(ClockCycle = 1) then 
                 ALU_Operation   <= ALU_OP_SBC;
                 ImData          := (others => '0');
             end if;
@@ -819,27 +892,6 @@ begin
 
         -- STS instruction
         if(std_match(IR, OpSTS)) then
-        
---            if(ClockCycle = 0) then
---                LoadNewInst <= '0';
---                PCOffset <= std_logic_vector(to_signed(0, 12));
---                -- No action (waiting for m)
---            end if;
---            if CycleCount = "01" then
---                newIns   <= '0';
---                -- No action (m is output automatically, outside this process)
---            end if;
---            if CycleCount = "10" then
---                -- Keep everything the same (data comes in / goes out)
---                if ProgDBM = '1' then
---                    OutRd  <= IR(9);        -- Read
---                    OutWr  <= not IR(9);    -- Write
---                end if;
-                
---                if (IR(9) = '0') or (ProgDBM = '0') then -- (LOAD or Register store)
---                    EnableIn  <= '1'; -- input into registers
---                end if;
---            end if;
         end if;
 
         -- SUB instruction
@@ -885,24 +937,27 @@ begin
         Immediate <= ImData;
     end process;
 
-    -- Keep track of the cycles for each instruction
     UpdateClockCycle : process
     begin
         wait until rising_edge(Clock);
 
         ClockCycle <= 0;
 
-        -- Increase the cycle counter according to the current instruction
-        if((ClockCycle = 0) and (std_match(IR, OpMUL) or std_match(IR, OpADIW) or std_match(IR, OpSBIW) or std_match(IR, OpSTS) or 
-                                 std_match(IR, OpJMP) or std_match(IR, OpRJMP) or std_match(IR, OpIJMP) or 
-                                 std_match(IR, OpRCALL) or std_match(IR, OpICALL) or std_match(IR, OpPOP) or std_match(IR, OpPUSH) or
-                                 std_match(IR, OpRET) or std_match(IR, OpSBI) or std_match(IR, OpCBI)
+        if((ClockCycle = 0) and (std_match(IR, OpMUL) or std_match(IR, OpMULS) or std_match(IR, OpMULSU) or std_match(IR, OpADIW) or
+                                 std_match(IR, OpSBIW) or std_match(IR, OpSTS) or std_match(IR, OpJMP) or std_match(IR, OpRJMP) or
+                                 std_match(IR, OpIJMP) or std_match(IR, OpRCALL) or std_match(IR, OpICALL) or std_match(IR, OpPOP) or
+                                 std_match(IR, OpPUSH) or std_match(IR, OpRET) or std_match(IR, OpSBI) or std_match(IR, OpCBI) or
+                                 (Branch = '1')
                                  )) then
             ClockCycle <= 1;
         elsif((ClockCycle = 1) and (std_match(IR, OpRCALL) or std_match(IR, OpICALL) or std_match(IR, OpRET))) then
             ClockCycle <= 2;
         elsif((ClockCycle = 2) and (std_match(IR, OpRET))) then
             ClockCycle <= 3;
+        end if;
+
+        if(nReset = '0') then
+            ClockCycle <= 0;
         end if;
     end process;
 end InstructionDecoder_Arch;

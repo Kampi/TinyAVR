@@ -146,7 +146,7 @@ begin
     R <= ArithmeticResult       when ((Operation = ALU_OP_ADC) or (Operation = ALU_OP_ADD) or (Operation = ALU_OP_SBC) or (Operation = ALU_OP_SUB) or (Operation = ALU_OP_NEG)) else
          LogicResult            when ((Operation = ALU_OP_AND) or (Operation = ALU_OP_OR) or (Operation = ALU_OP_NOT) or (Operation = ALU_OP_XOR))                              else
          ShiftResult            when ((Operation = ALU_OP_ASR) or (Operation = ALU_OP_ROR) or (Operation = ALU_OP_SWAP))                                                        else
-         MultiplicationResult   when (Operation = ALU_OP_MUL)                                                                                                                   else
+         MultiplicationResult   when ((Operation = ALU_OP_MUL_HIGH_U) or (Operation = ALU_OP_MUL_LOW_U))                                                                        else
          (others => '0');
 
     H <= ArithmeticH            when ((Operation = ALU_OP_ADC) or (Operation = ALU_OP_ADD) or (Operation = ALU_OP_SBC) or (Operation = ALU_OP_SUB) or (Operation = ALU_OP_NEG)) else
@@ -157,9 +157,9 @@ begin
          '0';
 
     C <= ArithmeticC            when ((Operation = ALU_OP_ADC) or (Operation = ALU_OP_ADD) or (Operation = ALU_OP_SBC) or (Operation = ALU_OP_SUB) or (Operation = ALU_OP_NEG)) else
-         ShiftC                 when ((Operation = ALU_OP_ASR) or (Operation = ALU_OP_ROR)) else
-         MultiplicationC        when ((Operation = ALU_OP_MUL)) else
-         '1'                    when ((Operation = ALU_OP_NOT)) else
+         ShiftC                 when ((Operation = ALU_OP_ASR) or (Operation = ALU_OP_ROR))                                                                                     else
+         MultiplicationC        when ((Operation = ALU_OP_MUL_HIGH_U) or (Operation = ALU_OP_MUL_LOW_U))                                                                        else
+         '1'                    when ((Operation = ALU_OP_NOT))                                                                                                                 else
          '0';
 
     ArithmeticINst : ALU_Arithmetic port map (  Operation   => Operation,

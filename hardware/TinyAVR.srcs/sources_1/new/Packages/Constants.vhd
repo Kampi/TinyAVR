@@ -85,7 +85,10 @@ package Constants is
     constant ALU_SET_T              :   ALU_Op_t        := "10110";                 -- Set the T Flag
 
     -- Multiplication operations
-    constant ALU_OP_MUL             :   ALU_Op_t        := "10101";
+    constant ALU_OP_MUL_HIGH_U      :   ALU_Op_t        := "10111";                 -- Unsigned high byte multiplication
+    constant ALU_OP_MUL_LOW_U       :   ALU_Op_t        := "11000";                 -- Unsigned low byte multiplication
+    constant ALU_OP_MUL_HIGH_S      :   ALU_Op_t        := "11001";                 -- Signed high byte multiplication
+    constant ALU_OP_MUL_LOW_S       :   ALU_Op_t        := "11010";                 -- Signed low byte multiplication
 
     -- Status bit positions
     constant STATUS_BIT_C           :   INTEGER         := 0;                       -- Bit position of the C (Carry) flag
@@ -102,5 +105,8 @@ package Constants is
     constant STATUS_FLAG_HSVNZC     :   Bit_Mask_t      := "00111111";              -- Change the status flags H, S, V, N, Z, C
     constant STATUS_FLAG_SVNZC      :   Bit_Mask_t      := "00011111";              -- Change the status flags S, V, N, Z, C
     constant STATUS_FLAG_SVNZ       :   Bit_Mask_t      := "00011110";              -- Change the status flags S, V, N, Z
+    constant STATUS_FLAG_ZC         :   Bit_Mask_t      := "00000011";              -- Change the status flags Z, C
+    constant STATUS_FLAG_Z          :   Bit_Mask_t      := "00000010";              -- Change the status flag Z
+    constant STATUS_FLAG_C          :   Bit_Mask_t      := "00000001";              -- Change the status flag C
 
 end package;

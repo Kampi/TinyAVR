@@ -37,8 +37,8 @@ package Opcodes is
 
     constant OpBCLR     : Opcode_t          := "100101001---1000";
     constant OpBLD      : Opcode_t          := "1111100-----0---";
-    constant OpBRBC     : Opcode_t          := "111101----------";          -- Not implemented (2 clock cycles)
-    constant OpBRBS     : Opcode_t          := "111100----------";          -- Not implemented (2 clock cycles)
+    constant OpBRBC     : Opcode_t          := "111101----------";
+    constant OpBRBS     : Opcode_t          := "111100----------";
     constant OpBRCC     : OpCode_t          := "111101-------000";          -- Implemented with BRBC
     constant OpBRCS     : OpCode_t          := "111100-------000";          -- Implemented with BRBS
     constant OpBREAK    : Opcode_t          := "1001010110011000";          -- Not implemented (Debug module)
@@ -106,9 +106,9 @@ package Opcodes is
 
     constant OpMOV      : Opcode_t          := "001011----------";
     constant OpMOVW     : Opcode_t          := "00000001--------";
-    constant OpMUL      : Opcode_t          := "100111----------";          -- Not implemented
+    constant OpMUL      : Opcode_t          := "100111----------";
     constant OpMULS     : Opcode_t          := "00000010--------";          -- Not implemented
-    constant OpMULSU    : Opcode_t          := "000000110---0---";          -- Not implemented
+    constant OpMULSU    : Opcode_t          := "000000110---0---";
 
     constant OpNEG      : Opcode_t          := "1001010-----0001";
     constant OpNOP      : Opcode_t          := "0000000000000000";

@@ -12,6 +12,8 @@
 
 ## About
 
+![Title](images/Title.png)
+
 VHDL-based implementation of an Atmel / Microchip [AVR](https://en.wikipedia.org/wiki/AVR_microcontrollers) compatible CPU.
 
 ## Files
@@ -24,7 +26,7 @@ VHDL-based implementation of an Atmel / Microchip [AVR](https://en.wikipedia.org
 
 ## Supported instructions
 
-Check the file `hardware/TinyAVR.srcs/sources_1/new/Packages/Opcodes.vhd` to get a brief overview of the supported OpCodes.
+Check `hardware/TinyAVR.srcs/sources_1/new/Packages/Opcodes.vhd` to get a brief overview of the supported Opcodes.
 
 ## History
 

@@ -44,6 +44,28 @@ end ALU_Multiplication;
 
 architecture ALU_Multiplication_Arch of ALU_Multiplication is
 
+    signal Partial              : STD_LOGIC_VECTOR(13 downto 0)             := (others => '0');
+    signal Transfer             : STD_LOGIC_VECTOR(5 downto 0)              := (others => '0');
+
 begin
+
+    process(A, B, Operation)
+    begin
+        if(Operation = ALU_OP_MUL_LOW_U) then
+            Partial <= STD_LOGIC_VECTOR(("00" & UNSIGNED(A(3 downto 0)) * UNSIGNED(B(7 downto 4)) & "0000") +
+                                         ("00" & UNSIGNED(A(7 downto 4)) * UNSIGNED(B(3 downto 0)) & "0000") +
+                                         ("000000" & UNSIGNED(A(3 downto 0)) * UNSIGNED(B(3 downto 0))));
+        elsif(Operation = ALU_OP_MUL_HIGH_U) then
+            Partial <= STD_LOGIC_VECTOR(("000000" & UNSIGNED(A(7 downto 4)) * UNSIGNED(B(7 downto 4))) + UNSIGNED("00000000" & Transfer));
+        end if;
+    end process;
+
+    process(Partial)
+    begin
+        Transfer <= STD_LOGIC_VECTOR(Partial(13 downto 8));
+        C <= Partial(8);
+    end process;
+
+    R <= Partial(7 downto 0);
 
 end ALU_Multiplication_Arch;

@@ -37,7 +37,7 @@ library TinyAVR;
 use TinyAVR.Constants.all;
 
 entity PM is
-    Port (  ProgramAddress      : in STD_LOGIC_VECTOR(15 downto 0);             -- Program memory address bus
+    Port (  ProgramAddress      : in UNSIGNED(15 downto 0);                     -- Program memory address bus
             ProgramData         : out STD_LOGIC_VECTOR(15 downto 0)             -- Program memory data bus
             );
 end PM;
@@ -61,11 +61,13 @@ architecture PM_Arch of PM is
 
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Subroutines/Call-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Arith-Test.hex");
+    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Mul-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Bitmanipulation/Bitmanipulation.hex");
-    signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Bitmanipulation/CBI_SBI.hex");
+    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Bitmanipulation/CBI_SBI.hex");
+    signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Branch/Branch-Test.hex");
 
 begin
 
-    ProgramData <= Memory(to_integer(UNSIGNED(ProgramAddress)));
+    ProgramData <= Memory(to_integer(ProgramAddress));
 
 end PM_Arch;
