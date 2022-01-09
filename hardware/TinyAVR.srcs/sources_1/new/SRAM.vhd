@@ -89,6 +89,12 @@ begin
             RAM(16#3D#) <= StackPointerIn(7 downto 0);
         elsif((Source = MEM_MEMORY) and (WE = '1') and (Enable = '1')) then
             RAM(to_integer(UNSIGNED(Address))) <= Data;
+        elsif((Source = MEM_X) and (WE = '1') and (Enable = '1')) then
+            RAM(to_integer(UNSIGNED(X))) <= RegisterIn;
+        elsif((Source = MEM_Y) and (WE = '1') and (Enable = '1')) then
+            RAM(to_integer(UNSIGNED(Y))) <= RegisterIn;
+        elsif((Source = MEM_Z) and (WE = '1') and (Enable = '1')) then
+            RAM(to_integer(UNSIGNED(Z))) <= RegisterIn;
         end if;
 
         if(nReset = '0') then

@@ -61,21 +61,18 @@ begin
         end loop;
     end process;
 
-    ShiftResult(6 downto 0) <=  ShiftRight(6 downto 0)              when ((Operation = ALU_OP_ASR) or (Operation = ALU_OP_ROR)) else
-                                ShiftLeft(6 downto 0)               when (Operation = ALU_OP_LSL)                               else
-                                A(2 downto 0) & A(7 downto 4)       when (Operation = ALU_OP_SWAP)                              else
+    ShiftResult(6 downto 0) <=  ShiftRight(6 downto 0)              when ((Operation = ALU_OP_ASR) or (Operation = ALU_OP_ROR) or (Operation = ALU_OP_LSR)) else
+                                A(2 downto 0) & A(7 downto 4)       when (Operation = ALU_OP_SWAP)                                                          else
                                 (others => 'X');
 
-    ShiftResult(7)          <=  A(7)                                when (Operation = ALU_OP_ASR)                               else
-                                CarryIn                             when (Operation = ALU_OP_ROR)                               else
-                                A(3)                                when (Operation = ALU_OP_SWAP)                              else
+    ShiftResult(7)          <=  A(7)                                when (Operation = ALU_OP_ASR)                                                           else
+                                CarryIn                             when (Operation = ALU_OP_ROR)                                                           else
+                                A(3)                                when (Operation = ALU_OP_SWAP)                                                          else
+                                '0'                                 when (Operation = ALU_OP_LSR)                                                           else
                                 'X';
 
-    C                       <=  A(0)                                when ((Operation = ALU_OP_ASR) or (Operation = ALU_OP_ROR)) else
-                                'X';
-
-    V                       <= ShiftResult(7) xor A(0);
-
-    R <= ShiftResult;
+    C                       <=  A(0);
+    V                       <=  ShiftResult(7) xor A(0);
+    R                       <=  ShiftResult;
 
 end ALU_Shift_Arch;

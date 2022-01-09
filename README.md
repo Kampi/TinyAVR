@@ -19,7 +19,7 @@ VHDL-based implementation of an Atmel / Microchip [AVR](https://en.wikipedia.org
 ## Files
 
 - `scripts`
-  - `Intel2Hex` : Python application to convert a compiles AVR application ([Intel Hex Format](https://en.wikipedia.org/wiki/Intel_HEX)) into a Hex-File for the program memory of the Vivado project.
+  - `Intel2Hex` : Python application to convert a compiled AVR application from [Intel Hex Format](https://en.wikipedia.org/wiki/Intel_HEX) to a Hex-File for the program memory of the Vivado project.
 - `software`
   - `AVRASM` : Source files and compiled assembly applications to test the CPU core.
 - `hardware` : The CPU core project.

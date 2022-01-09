@@ -49,7 +49,7 @@ architecture ALU_Multiplication_Arch of ALU_Multiplication is
 
 begin
 
-    process(A, B, Operation)
+    process(A, B, Operation, Transfer)
     begin
         if(Operation = ALU_OP_MUL_LOW_U) then
             Partial <= STD_LOGIC_VECTOR(("00" & UNSIGNED(A(3 downto 0)) * UNSIGNED(B(7 downto 4)) & "0000") +

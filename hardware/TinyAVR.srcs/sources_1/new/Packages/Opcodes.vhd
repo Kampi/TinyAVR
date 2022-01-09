@@ -79,11 +79,12 @@ package Opcodes is
     constant OpCPI      : Opcode_t          := "0011------------";
     constant OpCPSE     : Opcode_t          := "000100----------";          -- Not implemented (2 clock cycles)
 
+    constant OpDES      : Opcode_t          := "10010100----1011";          -- XMega Series only
     constant OpDEC      : Opcode_t          := "1001010-----1010";
 
     constant OpEICALL   : Opcode_t          := "1001010100011001";          -- Not available in all devices
     constant OpEIJMP    : Opcode_t          := "1001010000011001";          -- Not available in all devices
-    constant OpELPM     : Opcode_t          := "----------------";          -- Not implemented
+    constant OpELPM     : Opcode_t          := "----------------";          -- Not implemented (no ISP)
     constant OpEOR      : Opcode_t          := "001001----------";
 
     constant OpFMUL     : Opcode_t          := "000000110---1---";          -- Not available in all devices
@@ -97,12 +98,28 @@ package Opcodes is
 
     constant OpJMP      : Opcode_t          := "1001010-----110-";          -- Not available in all devices
 
-    -- Rest is missing
-    constant OpLAC      : Opcode_t          := "1001001-----0110";          -- Not implemented
-    constant OpLAS      : Opcode_t          := "1001001-----0101";          -- Not implemented
-    constant OpLAT      : Opcode_t          := "1001001-----0111";          -- Not implemented
-    -- Rest is missing
+    constant OpLAC      : Opcode_t          := "1001001-----0110";          -- XMega Series only
+    constant OpLAS      : Opcode_t          := "1001001-----0101";          -- XMega Series only
+    constant OpLAT      : Opcode_t          := "1001001-----0111";          -- XMega Series only
+    constant OpLD_X_1   : Opcode_t          := "1001000-----1100";          -- Not implemented
+    constant OpLD_X_2   : Opcode_t          := "1001000-----1101";          -- Not implemented
+    constant OpLD_X_3   : Opcode_t          := "1001000-----1110";          -- Not implemented
+    constant OpLD_Y_1   : Opcode_t          := "1000000-----1000";          -- Not implemented
+    constant OpLD_Y_2   : Opcode_t          := "1001000-----1001";          -- Not implemented
+    constant OpLD_Y_3   : Opcode_t          := "1001000-----1010";          -- Not implemented
+    constant OpLD_Y_4   : Opcode_t          := "10-0--0-----1---";          -- Not implemented
+    constant OpLD_Z_1   : Opcode_t          := "1000000-----0000";          -- Not implemented
+    constant OpLD_Z_2   : Opcode_t          := "1001000-----0001";          -- Not implemented
+    constant OpLD_Z_3   : Opcode_t          := "1001000-----0010";          -- Not implemented
+    constant OpLD_Z_4   : Opcode_t          := "10-0--0-----0---";          -- Not implemented
     constant OpLDI      : Opcode_t          := "1110------------";
+    constant OpLDS_Long : Opcode_t          := "1001000-----0000";          -- Not implemented
+    constant OpLDS      : Opcode_t          := "10100-----------";          -- Not implemented
+    constant OpLPM_1    : Opcode_t          := "1001010111001000";          -- Not implemented (no ISP)
+    constant OpLPM_2    : Opcode_t          := "1001000-----0100";          -- Not implemented (no ISP)
+    constant OpLPM_3    : Opcode_t          := "1001000-----0101";          -- Not implemented (no ISP)
+    constant OpLSL      : Opcode_t          := "000011----------";          -- Implemented with ADD
+    constant OpLSR      : Opcode_t          := "1001010-----0110";
 
     constant OpMOV      : Opcode_t          := "001011----------";
     constant OpMOVW     : Opcode_t          := "00000001--------";
@@ -146,9 +163,21 @@ package Opcodes is
     constant OpSEV      : Opcode_t          := "1001010000111000";          -- Implemented with BSET
     constant OpSEZ      : Opcode_t          := "1001010000011000";          -- Implemented with BSET
     constant OpSLEEP    : Opcode_t          := "1000010110001000";          -- Not implemented
-    --constant OpSPM      : Opcode_t          := "";
-    
-    -- Rest is missing
+    constant OpSPM_1    : Opcode_t          := "1001010111101000";          -- Not implemented (no ISP)
+    constant OpSPM_2    : Opcode_t          := "1001010111101000";          -- Not implemented (no ISP)
+    constant OpSPM_3    : Opcode_t          := "1001010111111000";          -- Not implemented (no ISP)
+    constant OpST_X_1   : Opcode_t          := "1001001-----1100";
+    constant OpST_X_2   : Opcode_t          := "1001001-----1101";
+    constant OpST_X_3   : Opcode_t          := "1001001-----1110";
+    constant OpST_Y_1   : Opcode_t          := "1000001-----1000";
+    constant OpST_Y_2   : Opcode_t          := "1001001-----1001";
+    constant OpST_Y_3   : Opcode_t          := "1001001-----1010";
+    constant OpST_Y_4   : Opcode_t          := "10-0--1-----1---";          -- XMega Series only
+    constant OpST_Z_1   : Opcode_t          := "1000001-----0000";
+    constant OpST_Z_2   : Opcode_t          := "1001001-----0001";
+    constant OpST_Z_3   : Opcode_t          := "1001001-----0010";
+    constant OpST_Z_4   : Opcode_t          := "10-0--1-----0---";          -- XMega Series only
+    constant OpSTS_Long : Opcode_t          := "1001001-----0000";          -- Not implemented
     constant OpSTS      : Opcode_t          := "1001001-----0000";
     constant OpSUB      : Opcode_t          := "000110----------";
     constant OpSUBI     : Opcode_t          := "0101------------";
@@ -158,6 +187,6 @@ package Opcodes is
  
     constant OpWDR      : Opcode_t          := "1001010110101000";          -- Not implemented (no watchdog)
 
-    constant OpXCH      : Opcode_t          := "1001001-----0100";          -- Not implemented
+    constant OpXCH      : Opcode_t          := "1001001-----0100";          -- XMega Series only
 
 end package;

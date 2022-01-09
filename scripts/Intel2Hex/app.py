@@ -31,7 +31,9 @@ if(__name__ == "__main__"):
                 print("     Checksum: {}".format(Checksum))
 
     if(args.debug):
-        print("[DEBUG] Instructions: {}".format(Instructions))
+        print("[DEBUG] Result:")
+        print("     Length: {}".format(len(Instructions)))
+        print("     Instructions: {}".format(Instructions))
 
     with open(args.output, "w") as File:
         for Instruction in Instructions:

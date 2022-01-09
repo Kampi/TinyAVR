@@ -46,6 +46,9 @@ architecture Core_Arch of Core is
     signal MemoryWE             : STD_LOGIC;
     signal MemoryEnable         : STD_LOGIC;
     signal Pair                 : STD_LOGIC;
+    signal UpdateX              : STD_LOGIC;
+    signal UpdateY              : STD_LOGIC;
+    signal UpdateZ              : STD_LOGIC;
 
     signal MemoryAddress        : STD_LOGIC_VECTOR(7 downto 0);
     signal X                    : STD_LOGIC_VECTOR(15 downto 0);
@@ -69,11 +72,12 @@ architecture Core_Arch of Core is
     signal StackPointerOut      : STD_LOGIC_VECTOR(15 downto 0);
 
     signal PCOffset             : SIGNED(11 downto 0);
+    signal RegOffset            : SIGNED(1 downto 0);
     signal ProgAddr             : UNSIGNED(15 downto 0);
     signal PCAddr               : UNSIGNED(15 downto 0);
 
     signal PC_Mode              : PC_Mode_t;
-    signal Register_Sel         : Sel_t;
+    signal Register_Source      : Reg_Source_t;
     signal ALU_Sel              : ALU_Src_t;
     signal ALU_Operation        : ALU_Op_t;
     signal SREG_Mask            : Bit_Mask_t;
@@ -102,12 +106,16 @@ architecture Core_Arch of Core is
         Port (  Clock           : in STD_LOGIC;
                 nReset          : in STD_LOGIC;
                 WE              : in STD_LOGIC;
-                Pair            : in STD_LOGIC;  
+                Pair            : in STD_LOGIC;
+                UpdateX         : in STD_LOGIC;
+                UpdateY         : in STD_LOGIC;
+                UpdateZ         : in STD_LOGIC;
                 DstRegAddr      : in STD_LOGIC_VECTOR(6 downto 0);
                 RegDAddr        : in STD_LOGIC_VECTOR(6 downto 0);
                 RegRAddr        : in STD_LOGIC_VECTOR(6 downto 0);
-                Sel             : in Sel_t;
-                ALUIn           : in STD_LOGIC_VECTOR(7 downto 0);
+                OffsetAddr      : in SIGNED(1 downto 0);
+                Source          : in Reg_Source_t;
+                ALU             : in STD_LOGIC_VECTOR(7 downto 0);
                 Immediate       : in STD_LOGIC_VECTOR(7 downto 0);
                 Memory          : in STD_LOGIC_VECTOR(7 downto 0);
                 X               : out STD_LOGIC_VECTOR(15 downto 0);
@@ -139,13 +147,17 @@ architecture Core_Arch of Core is
                 ALU_Operation   : out ALU_Op_t;
                 ALU_Sel         : out ALU_Src_t;
                 T_Mask          : out STD_LOGIC_VECTOR(7 downto 0);
-                Register_Sel    : out Sel_t;
+                Register_Source : out Reg_Source_t;
                 DstRegAddr      : out STD_LOGIC_VECTOR(6 downto 0);
                 RegDAddr        : out STD_LOGIC_VECTOR(6 downto 0);
                 RegRAddr        : out STD_LOGIC_VECTOR(6 downto 0);
                 Immediate       : out STD_LOGIC_VECTOR(7 downto 0);
                 Register_WE     : out STD_LOGIC;
                 Register_Pair   : out STD_LOGIC;
+                Offset_Addr     : out SIGNED(1 downto 0);
+                UpdateX         : out STD_LOGIC;
+                UpdateY         : out STD_LOGIC;
+                UpdateZ         : out STD_LOGIC;
                 Memory_Data     : inout STD_LOGIC_VECTOR(7 downto 0);
                 Memory_WE       : out STD_LOGIC;
                 Memory_Enable   : out STD_LOGIC;
@@ -202,11 +214,15 @@ begin
                                                     nReset => nReset,
                                                     WE => RegisterWE,
                                                     Pair => Pair,
+                                                    UpdateX => UpdateX,
+                                                    UpdateY => UpdateY,
+                                                    UpdateZ => UpdateZ,
                                                     DstRegAddr => DstRegAddr,
                                                     RegDAddr => RegDAddr,
                                                     RegRAddr => RegRAddr,
-                                                    Sel => Register_Sel,
-                                                    ALUIn => ALUOut,
+                                                    OffsetAddr => RegOffset,
+                                                    Source => Register_Source,
+                                                    ALU => ALUOut,
                                                     Immediate => Immediate,
                                                     Memory => Memory,
                                                     RegD => RegD,
@@ -233,11 +249,15 @@ begin
                                                             IR => IR,
                                                             Register_WE => RegisterWE, 
                                                             Register_Pair => Pair,
+                                                            Offset_Addr => RegOffset,
+                                                            UpdateX => UpdateX,
+                                                            UpdateY => UpdateY,
+                                                            UpdateZ => UpdateZ,
                                                             DstRegAddr => DstRegAddr,
                                                             RegDAddr => RegDAddr,
                                                             RegRAddr => RegRAddr,
                                                             Immediate => Immediate,
-                                                            Register_Sel => Register_Sel,
+                                                            Register_Source => Register_Source,
                                                             T_Mask => T_Mask,
                                                             ALU_Sel => ALU_Sel,
                                                             ALU_Operation => ALU_Operation,

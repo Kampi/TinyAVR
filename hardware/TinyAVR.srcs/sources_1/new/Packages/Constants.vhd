@@ -26,7 +26,7 @@ package Constants is
     constant SRAM_SIZE              :   INTEGER         := 12;                      -- Address length of the SRAM in bit
     constant PM_SIZE                :   INTEGER         := 6;                       -- Address length of the Program Memory in bit
 
-    subtype Sel_t           is STD_LOGIC_VECTOR(1 downto 0);                        -- Data input source selection
+    subtype Reg_Source_t    is STD_LOGIC_VECTOR(1 downto 0);                        -- Data input source selection
     subtype PC_Mode_t       is STD_LOGIC_VECTOR(1 downto 0);                        -- Program Counter modes
     subtype ALU_Src_t       is STD_LOGIC_VECTOR(1 downto 0);                        -- Input sources for the ALU
     subtype ALU_Op_t        is STD_LOGIC_VECTOR(4 downto 0);                        -- ALU operation code
@@ -43,16 +43,19 @@ package Constants is
     constant PC_SET                 :   PC_Mode_t       := "11";                    -- Set the Program Counter to a given address
 
     -- SRAM address sources
-    constant MEM_MEMORY             :   Sram_Source_t   := "000";                   -- Update SRAM
-    constant MEM_SREG               :   Sram_Source_t   := "001";                   -- Update SREG
-    constant MEM_REG                :   Sram_Source_t   := "010";                   -- Update Register
-    constant MEM_SP                 :   Sram_Source_t   := "011";                   -- Update Stack Pointer
+    constant MEM_MEMORY             :   Sram_Source_t   := "000";                   -- Update from SRAM
+    constant MEM_SREG               :   Sram_Source_t   := "001";                   -- Update from SREG
+    constant MEM_REG                :   Sram_Source_t   := "010";                   -- Update from Register
+    constant MEM_SP                 :   Sram_Source_t   := "011";                   -- Update from Stack Pointer
+    constant MEM_X                  :   Sram_Source_t   := "100";                   -- Update from Register with X Register as address
+    constant MEM_Y                  :   Sram_Source_t   := "101";                   -- Update from Register with Y Register as address
+    constant MEM_Z                  :   Sram_Source_t   := "110";                   -- Update from Register with Z Register as address
 
     -- Input data sources
-    constant SRC_ALU                :   Sel_t           := "00";                    -- Use the ALU output as data source
-    constant SRC_MEMORY             :   Sel_t           := "01";                    -- Use the SRAM output as data source
-    constant SRC_IMMEDIATE          :   Sel_t           := "10";                    -- Use a immediate value as data source
-    constant SRC_REGISTER           :   Sel_t           := "11";                    -- Use the register file as data source
+    constant SRC_ALU                :   Reg_Source_t        := "00";                -- Use the ALU output as data source
+    constant SRC_MEMORY             :   Reg_Source_t        := "01";                -- Use the SRAM output as data source
+    constant SRC_IMMEDIATE          :   Reg_Source_t        := "10";                -- Use a immediate value as data source
+    constant SRC_REGISTER           :   Reg_Source_t        := "11";                -- Use the register file as data source
 
     -- Second data source for ALU
     constant ALU_SRC_REG            :   ALU_Src_t       := "00";                    -- Register R as data source
@@ -60,7 +63,7 @@ package Constants is
     constant ALU_SRC_T_REG          :   ALU_Src_t       := "10";                    -- Use the T Flag mask as data source
 
     -- ALU operations
-    constant ALU_OP_NOP             :   ALU_Op_t        := (others => '0');         -- No ALU operation
+    constant ALU_OP_NOP             :   ALU_Op_t        := "00000";                 -- No ALU operation
 
     -- Arithmetic operations
     constant ALU_OP_ADC             :   ALU_Op_t        := "00001";                 -- Addition with carry
