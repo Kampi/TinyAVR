@@ -511,8 +511,175 @@ begin
         if(std_match(IR, OpJMP)) then
         end if;
 
-        -- LD instruction
+        -- LD (X) instruction
+        --  - Post increment:
+        --      - 1. Clock: Enable write to the Register file
+        --                  Set the SRAM as source for the Register file
+        --                  Enable update of the X Register
+        --                  Set the offset for the address register pair to 1
+        --                  Enable the SRAM
+        --                  Enable write to the SRAM
+        --                  Set the X Register as address source for the SRAM
+        --  - Pre decrement:
+        --      - 1. Clock: Disable write to the Register file
+        --                  Enable update of the X Register
+        --                  Disable the PC
+        --                  Enable a second clock cycle
+        --      - 2. Clock: Enable write to the Register file
+        --                  Set the SRAM as source for the Register file
+        --                  Enable the SRAM
+        --                  Enable write to the SRAM
+        --                  Set the X Register as address source for the SRAM
+        --  - No address modification:
+        --      - 1. Clock: Enable write to the Register file
+        --                  Set the SRAM as source for the Register file
+        --                  Enable the SRAM
+        --                  Enable write to the SRAM
+        --                  Set the X Register as address source for the SRAM
         if(std_match(IR, OpLD_X_1) or std_match(IR, OpLD_X_2) or std_match(IR, OpLD_X_3)) then
+            if(ClockCycle = 0) then
+                if(std_match(IR, OpLD_X_2)) then
+                    Register_WE     <= '1';
+                    Register_Source <= SRC_MEMORY;
+                    UpdateX         <= '1';
+                    Offset_Addr     <= to_signed(1, Offset_Addr'length);
+                    Memory_Enable   <= '1';
+                    Memory_WE       <= '0';
+                    Memory_Source   <= MEM_X;
+                elsif(std_match(IR, OpLD_X_3)) then
+                    Register_WE     <= '0';
+                    UpdateX         <= '1';
+                    Offset_Addr     <= to_signed(-1, Offset_Addr'length);
+                    PC_Mode         <= PC_KEEP;
+                    SecondCycle     <= '1';
+                else
+                    Register_WE     <= '1';
+                    Register_Source <= SRC_MEMORY;
+                    Memory_Enable   <= '1';
+                    Memory_WE       <= '0';
+                    Memory_Source   <= MEM_X;
+                end if;
+            elsif(ClockCycle = 1) then
+                Register_WE     <= '1';
+                Register_Source <= SRC_MEMORY;
+                Memory_Enable   <= '1';
+                Memory_WE       <= '0';
+                Memory_Source   <= MEM_X;
+            end if;
+        end if;
+
+        -- LD (Y) instruction
+        --  - Post increment:
+        --      - 1. Clock: Enable write to the Register file
+        --                  Set the SRAM as source for the Register file
+        --                  Enable update of the Y Register
+        --                  Set the offset for the address register pair to 1
+        --                  Enable the SRAM
+        --                  Enable write to the SRAM
+        --                  Set the Y Register as address source for the SRAM
+        --  - Pre decrement:
+        --      - 1. Clock: Disable write to the Register file
+        --                  Enable update of the Y Register
+        --                  Disable the PC
+        --                  Enable a second clock cycle
+        --      - 2. Clock: Enable write to the Register file
+        --                  Set the SRAM as source for the Register file
+        --                  Enable the SRAM
+        --                  Enable write to the SRAM
+        --                  Set the Y Register as address source for the SRAM
+        --  - No address modification:
+        --      - 1. Clock: Enable write to the Register file
+        --                  Set the SRAM as source for the Register file
+        --                  Enable the SRAM
+        --                  Enable write to the SRAM
+        --                  Set the Y Register as address source for the SRAM
+        if(std_match(IR, OpLD_Y_1) or std_match(IR, OpLD_Y_2) or std_match(IR, OpLD_Y_3)) then
+            if(ClockCycle = 0) then
+                if(std_match(IR, OpLD_X_2)) then
+                    Register_WE     <= '1';
+                    Register_Source <= SRC_MEMORY;
+                    UpdateY         <= '1';
+                    Offset_Addr     <= to_signed(1, Offset_Addr'length);
+                    Memory_Enable   <= '1';
+                    Memory_WE       <= '0';
+                    Memory_Source   <= MEM_Y;
+                elsif(std_match(IR, OpLD_Y_3)) then
+                    Register_WE     <= '0';
+                    UpdateY         <= '1';
+                    Offset_Addr     <= to_signed(-1, Offset_Addr'length);
+                    PC_Mode         <= PC_KEEP;
+                    SecondCycle     <= '1';
+                else
+                    Register_WE     <= '1';
+                    Register_Source <= SRC_MEMORY;
+                    Memory_Enable   <= '1';
+                    Memory_WE       <= '0';
+                    Memory_Source   <= MEM_Y;
+                end if;
+            elsif(ClockCycle = 1) then
+                Register_WE     <= '1';
+                Register_Source <= SRC_MEMORY;
+                Memory_Enable   <= '1';
+                Memory_WE       <= '0';
+                Memory_Source   <= MEM_Y;
+            end if;
+        end if;
+
+        -- LD (Z) instruction
+        --  - Post increment:
+        --      - 1. Clock: Enable write to the Register file
+        --                  Set the SRAM as source for the Register file
+        --                  Enable update of the Z Register
+        --                  Set the offset for the address register pair to 1
+        --                  Enable the SRAM
+        --                  Enable write to the SRAM
+        --                  Set the Z Register as address source for the SRAM
+        --  - Pre decrement:
+        --      - 1. Clock: Disable write to the Register file
+        --                  Enable update of the Z Register
+        --                  Disable the PC
+        --                  Enable a second clock cycle
+        --      - 2. Clock: Enable write to the Register file
+        --                  Set the SRAM as source for the Register file
+        --                  Enable the SRAM
+        --                  Enable write to the SRAM
+        --                  Set the Z Register as address source for the SRAM
+        --  - No address modification:
+        --      - 1. Clock: Enable write to the Register file
+        --                  Set the SRAM as source for the Register file
+        --                  Enable the SRAM
+        --                  Enable write to the SRAM
+        --                  Set the Z Register as address source for the SRAM
+        if(std_match(IR, OpLD_Z_1) or std_match(IR, OpLD_Z_2) or std_match(IR, OpLD_Z_3)) then
+            if(ClockCycle = 0) then
+                if(std_match(IR, OpLD_Z_2)) then
+                    Register_WE     <= '1';
+                    Register_Source <= SRC_MEMORY;
+                    UpdateZ         <= '1';
+                    Offset_Addr     <= to_signed(1, Offset_Addr'length);
+                    Memory_Enable   <= '1';
+                    Memory_WE       <= '0';
+                    Memory_Source   <= MEM_Z;
+                elsif(std_match(IR, OpLD_Z_3)) then
+                    Register_WE     <= '0';
+                    UpdateZ         <= '1';
+                    Offset_Addr     <= to_signed(-1, Offset_Addr'length);
+                    PC_Mode         <= PC_KEEP;
+                    SecondCycle     <= '1';
+                else
+                    Register_WE     <= '1';
+                    Register_Source <= SRC_MEMORY;
+                    Memory_Enable   <= '1';
+                    Memory_WE       <= '0';
+                    Memory_Source   <= MEM_Z;
+                end if;
+            elsif(ClockCycle = 1) then
+                Register_WE     <= '1';
+                Register_Source <= SRC_MEMORY;
+                Memory_Enable   <= '1';
+                Memory_WE       <= '0';
+                Memory_Source   <= MEM_Z;
+            end if;
         end if;
 
         -- LDI instruction
@@ -859,49 +1026,39 @@ begin
         end if;
 
         -- ST (X) instruction
+        --  - Disable write to the register file
         --  - Post increment:
-        --      - Set the register file as source
+        --      - Enable update of the X Register
         --      - Set the offset for the address register pair to 1
         --      - Enable the SRAM
         --      - Enable write to the SRAM
         --      - Set the address source for the SRAM to the X Register
-        --      - Enable update of the X Register
         --  - Pre decrement:
-        --      - Set the register file as source
+        --      - Enable update of the X Register
         --      - Set the offset for the address register pair to -1
         --      - 1. Clock: Disable the PC
         --                  Enable a second clock cycle
-        --                  Enable update of the X Register
         --      - 2. Clock: Enable write to the SRAM
         --                  Set the address source for the SRAM to the X Register
-        --                  Enable update of the X Register
         --  - No address modification:
         --      - Enable the SRAM
         --      - Enable write to the SRAM
         --      - Set the address source for the SRAM to the X Register
         if(std_match(IR, OpST_X_1) or std_match(IR, OpST_X_2) or std_match(IR, OpST_X_3)) then
-            -- Post incremented
-            if(std_match(IR, OpST_X_2)) then
-                Register_Source <= SRC_REGISTER;
-                Offset_Addr     <= to_signed(1, Offset_Addr'length);
-            -- Pre decremented
-            elsif(std_match(IR, OpST_X_3)) then
-                Register_Source <= SRC_REGISTER;
-                Offset_Addr     <= to_signed(-1, Offset_Addr'length);
-            -- Leave X unchanged
-            else
-            end if;
+            Register_WE     <= '0';
 
             if(ClockCycle = 0) then
                 if(std_match(IR, OpST_X_2)) then
+                    UpdateX         <= '1';
+                    Offset_Addr     <= to_signed(1, Offset_Addr'length);
                     Memory_Enable   <= '1';
                     Memory_WE       <= '1';
                     Memory_Source   <= MEM_X;
-                    UpdateX         <= '1';
                 elsif(std_match(IR, OpST_X_3)) then
                     PC_Mode         <= PC_KEEP;
                     SecondCycle     <= '1';
                     UpdateX         <= '1';
+                    Offset_Addr     <= to_signed(-1, Offset_Addr'length);
                 else
                     Memory_Enable   <= '1';
                     Memory_WE       <= '1';
@@ -915,49 +1072,39 @@ begin
         end if;
 
         -- ST (Y) instruction
+        --  - Disable write to the register file
         --  - Post increment:
-        --      - Set the register file as source
+        --      - Enable update of the Y Register
         --      - Set the offset for the address register pair to 1
         --      - Enable the SRAM
         --      - Enable write to the SRAM
         --      - Set the address source for the SRAM to the Y Register
-        --      - Enable update of the Y Register
         --  - Pre decrement:
-        --      - Set the register file as source
+        --      - Enable update of the Y Register
         --      - Set the offset for the address register pair to -1
         --      - 1. Clock: Disable the PC
         --                  Enable a second clock cycle
-        --                  Enable update of the Y Register
         --      - 2. Clock: Enable write to the SRAM
         --                  Set the address source for the SRAM to the Y Register
-        --                  Enable update of the Y Register
         --  - No address modification:
         --      - Enable the SRAM
         --      - Enable write to the SRAM
         --      - Set the address source for the SRAM to the Y Register
         if(std_match(IR, OpST_Y_1) or std_match(IR, OpST_Y_2) or std_match(IR, OpST_Y_3)) then
-            -- Post incremented
-            if(std_match(IR, OpST_Y_2)) then
-                Register_Source <= SRC_REGISTER;
-                Offset_Addr     <= to_signed(1, Offset_Addr'length);
-            -- Pre decremented
-            elsif(std_match(IR, OpST_Y_3)) then
-                Register_Source <= SRC_REGISTER;
-                Offset_Addr     <= to_signed(-1, Offset_Addr'length);
-            -- Leave Y unchanged
-            else
-            end if;
+            Register_WE     <= '0';
 
             if(ClockCycle = 0) then
                 if(std_match(IR, OpST_Y_2)) then
+                    UpdateY         <= '1';
+                    Offset_Addr     <= to_signed(1, Offset_Addr'length);
                     Memory_Enable   <= '1';
                     Memory_WE       <= '1';
                     Memory_Source   <= MEM_Y;
-                    UpdateY         <= '1';
                 elsif(std_match(IR, OpST_Y_3)) then
                     PC_Mode         <= PC_KEEP;
                     SecondCycle     <= '1';
                     UpdateY         <= '1';
+                    Offset_Addr     <= to_signed(-1, Offset_Addr'length);
                 else
                     Memory_Enable   <= '1';
                     Memory_WE       <= '1';
@@ -971,49 +1118,39 @@ begin
         end if;
 
         -- ST (Z) instruction
+        --  - Disable write to the register file
         --  - Post increment:
-        --      - Set the register file as source
+        --      - Enable update of the Z Register
         --      - Set the offset for the address register pair to 1
         --      - Enable the SRAM
         --      - Enable write to the SRAM
         --      - Set the address source for the SRAM to the Z Register
-        --      - Enable update of the Z Register
         --  - Pre decrement:
-        --      - Set the register file as source
+        --      - Enable update of the Z Register
         --      - Set the offset for the address register pair to -1
         --      - 1. Clock: Disable the PC
         --                  Enable a second clock cycle
-        --                  Enable update of the Z Register
         --      - 2. Clock: Enable write to the SRAM
         --                  Set the address source for the SRAM to the Z Register
-        --                  Enable update of the Z Register
         --  - No address modification:
         --      - Enable the SRAM
         --      - Enable write to the SRAM
         --      - Set the address source for the SRAM to the Z Register
         if(std_match(IR, OpST_Z_1) or std_match(IR, OpST_Z_2) or std_match(IR, OpST_Z_3)) then
-            -- Post incremented
-            if(std_match(IR, OpST_Z_2)) then
-                Register_Source <= SRC_REGISTER;
-                Offset_Addr     <= to_signed(1, Offset_Addr'length);
-            -- Pre decremented
-            elsif(std_match(IR, OpST_Z_3)) then
-                Register_Source <= SRC_REGISTER;
-                Offset_Addr     <= to_signed(-1, Offset_Addr'length);
-            -- Leave Z unchanged
-            else
-            end if;
+            Register_WE     <= '0';
 
             if(ClockCycle = 0) then
                 if(std_match(IR, OpST_Z_2)) then
+                    UpdateZ         <= '1';
+                    Offset_Addr     <= to_signed(1, Offset_Addr'length);
                     Memory_Enable   <= '1';
                     Memory_WE       <= '1';
                     Memory_Source   <= MEM_Z;
-                    UpdateY         <= '1';
                 elsif(std_match(IR, OpST_Z_3)) then
                     PC_Mode         <= PC_KEEP;
                     SecondCycle     <= '1';
-                    UpdateY         <= '1';
+                    UpdateZ         <= '1';
+                    Offset_Addr     <= to_signed(-1, Offset_Addr'length);
                 else
                     Memory_Enable   <= '1';
                     Memory_WE       <= '1';

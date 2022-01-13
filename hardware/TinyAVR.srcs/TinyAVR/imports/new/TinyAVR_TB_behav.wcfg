@@ -12,12 +12,12 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="268001fs"></ZoomEndTime>
-      <Cursor1Time time="132000fs"></Cursor1Time>
+      <ZoomStartTime time="124751fs"></ZoomStartTime>
+      <ZoomEndTime time="210752fs"></ZoomEndTime>
+      <Cursor1Time time="157251fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="122"></NameColumnWidth>
+      <NameColumnWidth column_width="110"></NameColumnWidth>
       <ValueColumnWidth column_width="58"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="13" />
@@ -56,134 +56,6 @@
    <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile" type="array">
       <obj_property name="ElementShortName">RegisterFile[0:31][7:0]</obj_property>
       <obj_property name="ObjectShortName">RegisterFile[0:31][7:0]</obj_property>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[0]" type="array">
-         <obj_property name="ElementShortName">[0][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[0][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[1]" type="array">
-         <obj_property name="ElementShortName">[1][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[1][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[2]" type="array">
-         <obj_property name="ElementShortName">[2][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[2][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[3]" type="array">
-         <obj_property name="ElementShortName">[3][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[3][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[4]" type="array">
-         <obj_property name="ElementShortName">[4][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[4][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[5]" type="array">
-         <obj_property name="ElementShortName">[5][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[5][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[6]" type="array">
-         <obj_property name="ElementShortName">[6][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[6][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[7]" type="array">
-         <obj_property name="ElementShortName">[7][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[7][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[8]" type="array">
-         <obj_property name="ElementShortName">[8][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[8][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[9]" type="array">
-         <obj_property name="ElementShortName">[9][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[9][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[10]" type="array">
-         <obj_property name="ElementShortName">[10][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[10][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[11]" type="array">
-         <obj_property name="ElementShortName">[11][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[11][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[12]" type="array">
-         <obj_property name="ElementShortName">[12][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[12][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[13]" type="array">
-         <obj_property name="ElementShortName">[13][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[13][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[14]" type="array">
-         <obj_property name="ElementShortName">[14][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[14][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[15]" type="array">
-         <obj_property name="ElementShortName">[15][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[15][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[16]" type="array">
-         <obj_property name="ElementShortName">[16][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[16][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[17]" type="array">
-         <obj_property name="ElementShortName">[17][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[17][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[18]" type="array">
-         <obj_property name="ElementShortName">[18][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[18][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[19]" type="array">
-         <obj_property name="ElementShortName">[19][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[19][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[20]" type="array">
-         <obj_property name="ElementShortName">[20][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[20][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[21]" type="array">
-         <obj_property name="ElementShortName">[21][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[21][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[22]" type="array">
-         <obj_property name="ElementShortName">[22][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[22][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[23]" type="array">
-         <obj_property name="ElementShortName">[23][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[23][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[24]" type="array">
-         <obj_property name="ElementShortName">[24][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[24][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[25]" type="array">
-         <obj_property name="ElementShortName">[25][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[25][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[26]" type="array">
-         <obj_property name="ElementShortName">[26][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[26][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[27]" type="array">
-         <obj_property name="ElementShortName">[27][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[27][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[28]" type="array">
-         <obj_property name="ElementShortName">[28][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[28][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[29]" type="array">
-         <obj_property name="ElementShortName">[29][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[29][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[30]" type="array">
-         <obj_property name="ElementShortName">[30][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[30][7:0]</obj_property>
-      </wvobject>
-      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegisterFile[31]" type="array">
-         <obj_property name="ElementShortName">[31][7:0]</obj_property>
-         <obj_property name="ObjectShortName">[31][7:0]</obj_property>
-      </wvobject>
    </wvobject>
    <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/RAM" type="array">
       <obj_property name="ElementShortName">RAM[0:4095][7:0]</obj_property>
@@ -224,6 +96,7 @@
    <wvobject fp_name="group11" type="group">
       <obj_property name="label">Instruction Decoder</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/TinyAVR_TB/UUT/Ctrl_i/ClockCycle" type="other">
          <obj_property name="ElementShortName">ClockCycle</obj_property>
          <obj_property name="ObjectShortName">ClockCycle</obj_property>
@@ -257,6 +130,10 @@
       <obj_property name="label">Register file</obj_property>
       <obj_property name="DisplayName">label</obj_property>
       <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/DstRegAddr" type="array">
+         <obj_property name="ElementShortName">DstRegAddr[6:0]</obj_property>
+         <obj_property name="ObjectShortName">DstRegAddr[6:0]</obj_property>
+      </wvobject>
       <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegDAddr" type="array">
          <obj_property name="ElementShortName">RegDAddr[6:0]</obj_property>
          <obj_property name="ObjectShortName">RegDAddr[6:0]</obj_property>
@@ -272,6 +149,18 @@
       <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/RegR" type="array">
          <obj_property name="ElementShortName">RegR[7:0]</obj_property>
          <obj_property name="ObjectShortName">RegR[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/Source" type="array">
+         <obj_property name="ElementShortName">Source[1:0]</obj_property>
+         <obj_property name="ObjectShortName">Source[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/ALU" type="array">
+         <obj_property name="ElementShortName">ALU[7:0]</obj_property>
+         <obj_property name="ObjectShortName">ALU[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/Memory" type="array">
+         <obj_property name="ElementShortName">Memory[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Memory[7:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/TinyAVR_TB/UUT/Register_i/WE" type="logic">
          <obj_property name="ElementShortName">WE</obj_property>

@@ -41,7 +41,7 @@ package Opcodes is
     constant OpBRBS     : Opcode_t          := "111100----------";
     constant OpBRCC     : OpCode_t          := "111101-------000";          -- Implemented with BRBC
     constant OpBRCS     : OpCode_t          := "111100-------000";          -- Implemented with BRBS
-    constant OpBREAK    : Opcode_t          := "1001010110011000";          -- Not implemented (Debug module)
+    constant OpBREAK    : Opcode_t          := "1001010110011000";          -- Not implemented (no debug module)
     constant OpBREQ     : OpCode_t          := "111101-------001";          -- Implemented with BRBC
     constant OpBRGE     : OpCode_t          := "111101-------100";          -- Implemented with BRBC
     constant OpBRHC     : OpCode_t          := "111101-------101";          -- Implemented with BRBC
@@ -101,23 +101,23 @@ package Opcodes is
     constant OpLAC      : Opcode_t          := "1001001-----0110";          -- XMega Series only
     constant OpLAS      : Opcode_t          := "1001001-----0101";          -- XMega Series only
     constant OpLAT      : Opcode_t          := "1001001-----0111";          -- XMega Series only
-    constant OpLD_X_1   : Opcode_t          := "1001000-----1100";          -- Not implemented
-    constant OpLD_X_2   : Opcode_t          := "1001000-----1101";          -- Not implemented
-    constant OpLD_X_3   : Opcode_t          := "1001000-----1110";          -- Not implemented
-    constant OpLD_Y_1   : Opcode_t          := "1000000-----1000";          -- Not implemented
-    constant OpLD_Y_2   : Opcode_t          := "1001000-----1001";          -- Not implemented
-    constant OpLD_Y_3   : Opcode_t          := "1001000-----1010";          -- Not implemented
-    constant OpLD_Y_4   : Opcode_t          := "10-0--0-----1---";          -- Not implemented
-    constant OpLD_Z_1   : Opcode_t          := "1000000-----0000";          -- Not implemented
-    constant OpLD_Z_2   : Opcode_t          := "1001000-----0001";          -- Not implemented
-    constant OpLD_Z_3   : Opcode_t          := "1001000-----0010";          -- Not implemented
-    constant OpLD_Z_4   : Opcode_t          := "10-0--0-----0---";          -- Not implemented
+    constant OpLD_X_1   : Opcode_t          := "1001000-----1100";
+    constant OpLD_X_2   : Opcode_t          := "1001000-----1101";
+    constant OpLD_X_3   : Opcode_t          := "1001000-----1110";
+    constant OpLD_Y_1   : Opcode_t          := "1000000-----1000";
+    constant OpLD_Y_2   : Opcode_t          := "1001000-----1001";
+    constant OpLD_Y_3   : Opcode_t          := "1001000-----1010";
+    constant OpLD_Y_4   : Opcode_t          := "10-0--0-----1---";          -- XMega Series only
+    constant OpLD_Z_1   : Opcode_t          := "1000000-----0000";
+    constant OpLD_Z_2   : Opcode_t          := "1001000-----0001";
+    constant OpLD_Z_3   : Opcode_t          := "1001000-----0010";
+    constant OpLD_Z_4   : Opcode_t          := "10-0--0-----0---";          -- XMega Series only
     constant OpLDI      : Opcode_t          := "1110------------";
     constant OpLDS_Long : Opcode_t          := "1001000-----0000";          -- Not implemented
     constant OpLDS      : Opcode_t          := "10100-----------";          -- Not implemented
-    constant OpLPM_1    : Opcode_t          := "1001010111001000";          -- Not implemented (no ISP)
-    constant OpLPM_2    : Opcode_t          := "1001000-----0100";          -- Not implemented (no ISP)
-    constant OpLPM_3    : Opcode_t          := "1001000-----0101";          -- Not implemented (no ISP)
+    constant OpLPM_1    : Opcode_t          := "1001010111001000";          -- Not implemented (no ISP module)
+    constant OpLPM_2    : Opcode_t          := "1001000-----0100";          -- Not implemented (no ISP module)
+    constant OpLPM_3    : Opcode_t          := "1001000-----0101";          -- Not implemented (no ISP module)
     constant OpLSL      : Opcode_t          := "000011----------";          -- Implemented with ADD
     constant OpLSR      : Opcode_t          := "1001010-----0110";
 
@@ -163,9 +163,9 @@ package Opcodes is
     constant OpSEV      : Opcode_t          := "1001010000111000";          -- Implemented with BSET
     constant OpSEZ      : Opcode_t          := "1001010000011000";          -- Implemented with BSET
     constant OpSLEEP    : Opcode_t          := "1000010110001000";          -- Not implemented
-    constant OpSPM_1    : Opcode_t          := "1001010111101000";          -- Not implemented (no ISP)
-    constant OpSPM_2    : Opcode_t          := "1001010111101000";          -- Not implemented (no ISP)
-    constant OpSPM_3    : Opcode_t          := "1001010111111000";          -- Not implemented (no ISP)
+    constant OpSPM_1    : Opcode_t          := "1001010111101000";          -- Not implemented (no ISP module)
+    constant OpSPM_2    : Opcode_t          := "1001010111101000";          -- Not implemented (no ISP module)
+    constant OpSPM_3    : Opcode_t          := "1001010111111000";          -- Not implemented (no ISP module)
     constant OpST_X_1   : Opcode_t          := "1001001-----1100";
     constant OpST_X_2   : Opcode_t          := "1001001-----1101";
     constant OpST_X_3   : Opcode_t          := "1001001-----1110";
@@ -178,14 +178,14 @@ package Opcodes is
     constant OpST_Z_3   : Opcode_t          := "1001001-----0010";
     constant OpST_Z_4   : Opcode_t          := "10-0--1-----0---";          -- XMega Series only
     constant OpSTS_Long : Opcode_t          := "1001001-----0000";          -- Not implemented
-    constant OpSTS      : Opcode_t          := "1001001-----0000";
+    constant OpSTS      : Opcode_t          := "1001001-----0000";          -- Not implemented
     constant OpSUB      : Opcode_t          := "000110----------";
     constant OpSUBI     : Opcode_t          := "0101------------";
     constant OpSWAP     : Opcode_t          := "1001010-----0010";
 
     constant OpTST      : Opcode_t          := "001000----------";          -- Implemented with AND
  
-    constant OpWDR      : Opcode_t          := "1001010110101000";          -- Not implemented (no watchdog)
+    constant OpWDR      : Opcode_t          := "1001010110101000";          -- Not implemented (no watchdog module)
 
     constant OpXCH      : Opcode_t          := "1001001-----0100";          -- XMega Series only
 

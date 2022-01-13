@@ -69,7 +69,10 @@ architecture SRAM_Arch of SRAM is
 
 begin
 
-    Data            <=  RAM(to_integer(UNSIGNED(Address))) when ((Enable = '1') and (WE = '0'))         else
+    Data            <=  RAM(to_integer(UNSIGNED(X))) when ((Source = MEM_X) and (Enable = '1') and (WE = '0'))  else
+                        RAM(to_integer(UNSIGNED(Y))) when ((Source = MEM_Y) and (Enable = '1') and (WE = '0'))  else
+                        RAM(to_integer(UNSIGNED(Z))) when ((Source = MEM_Z) and (Enable = '1') and (WE = '0'))  else
+                        RAM(to_integer(UNSIGNED(Address))) when ((Enable = '1') and (WE = '0'))                 else
                         (others => 'Z');
 
     StatusRegOut    <= RAM(16#3F#);

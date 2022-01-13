@@ -92,6 +92,23 @@ begin
     begin
         wait until rising_edge(Clock);
 
+        if(UpdateX = '1') then
+            Address := UNSIGNED(SIGNED('0' & X_Temp) + resize(OffsetAddr, X_Temp'length + 1));
+
+            RegisterFile(REG_COUNT - 6) <= STD_LOGIC_VECTOR(Address(7 downto 0));
+            RegisterFile(REG_COUNT - 5) <= STD_LOGIC_VECTOR(Address(15 downto 8));
+        elsif(UpdateY = '1') then
+            Address := UNSIGNED(SIGNED('0' & Y_Temp) + resize(OffsetAddr, Y_Temp'length + 1));
+
+            RegisterFile(REG_COUNT - 4) <= STD_LOGIC_VECTOR(Address(7 downto 0));
+            RegisterFile(REG_COUNT - 3) <= STD_LOGIC_VECTOR(Address(15 downto 8));
+        elsif(UpdateZ = '1') then
+            Address := UNSIGNED(SIGNED('0' & Z_Temp) + resize(OffsetAddr, Z_Temp'length + 1));
+
+            RegisterFile(REG_COUNT - 2) <= STD_LOGIC_VECTOR(Address(7 downto 0));
+            RegisterFile(REG_COUNT - 1) <= STD_LOGIC_VECTOR(Address(15 downto 8));
+        end if;
+
         if(WE = '1') then
             case Source is
                 when SRC_ALU =>
@@ -106,21 +123,6 @@ begin
                 when SRC_REGISTER =>
                     if(Pair = '1') then
                         RegisterFile(to_integer(UNSIGNED(DstRegAddr) + 1)) <= RegisterFile(to_integer(UNSIGNED(RegRAddr) + 1));
-                    elsif(UpdateX = '1') then
-                        Address := UNSIGNED(SIGNED('0' & X_Temp) + resize(OffsetAddr, X_Temp'length + 1));
-
-                        RegisterFile(REG_COUNT - 6) <= STD_LOGIC_VECTOR(Address(7 downto 0));
-                        RegisterFile(REG_COUNT - 5) <= STD_LOGIC_VECTOR(Address(15 downto 8));
-                    elsif(UpdateY = '1') then
-                        Address := UNSIGNED(SIGNED('0' & Y_Temp) + resize(OffsetAddr, Y_Temp'length + 1));
-
-                        RegisterFile(REG_COUNT - 4) <= STD_LOGIC_VECTOR(Address(7 downto 0));
-                        RegisterFile(REG_COUNT - 3) <= STD_LOGIC_VECTOR(Address(15 downto 8));
-                    elsif(UpdateZ = '1') then
-                        Address := UNSIGNED(SIGNED('0' & Z_Temp) + resize(OffsetAddr, Z_Temp'length + 1));
-
-                        RegisterFile(REG_COUNT - 2) <= STD_LOGIC_VECTOR(Address(7 downto 0));
-                        RegisterFile(REG_COUNT - 1) <= STD_LOGIC_VECTOR(Address(15 downto 8));
                     else
                         RegisterFile(to_integer(UNSIGNED(DstRegAddr))) <= RegisterFile(to_integer(UNSIGNED(RegRAddr)));
                     end if;
