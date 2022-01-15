@@ -124,7 +124,7 @@ package Opcodes is
     constant OpMOV      : Opcode_t          := "001011----------";
     constant OpMOVW     : Opcode_t          := "00000001--------";
     constant OpMUL      : Opcode_t          := "100111----------";
-    constant OpMULS     : Opcode_t          := "00000010--------";          -- Not implemented
+    constant OpMULS     : Opcode_t          := "00000010--------";
     constant OpMULSU    : Opcode_t          := "000000110---0---";
 
     constant OpNEG      : Opcode_t          := "1001010-----0001";

@@ -7,7 +7,7 @@
 -- Module Name:         ALU_Logic - ALU_Logic_Arch
 -- Project Name:        TinyAVR
 -- Target Devices: 
--- Tool Versions:       Vivado 2020.1
+-- Tool Versions:       Vivado 2020.2
 -- Description:         Logic block for the TinyAVR ALU.
 -- 
 -- Dependencies: 

@@ -7,7 +7,7 @@
 -- Module Name:         TinyAVR_TB - TinyAVR_TB_Arch
 -- Project Name:        TinyAVR
 -- Target Devices: 
--- Tool Versions: 
+-- Tool Versions:       Vivado 2020.2
 -- Description:         Testbench for the AVR microprocessor.
 -- 
 -- Dependencies: 
@@ -36,26 +36,34 @@ end TinyAVR_TB;
 
 architecture TinyAVR_TB_Arch of TinyAVR_TB is
 
-    constant ClockPeriod    : TIME := 8 ns;
+    constant SRAM_SIZE      : INTEGER       := 12;
+    constant PM_SIZE        : INTEGER       := 6;
+    constant ClockPeriod    : TIME          := 8 ns;
 
     -- Simulation signals
-    signal SimulationClock  : STD_LOGIC := '0';
-    signal nSimulationReset : STD_LOGIC := '0';
-    
-    signal Output           : STD_LOGIC_VECTOR(7 downto 0) := (others => '0');
+    signal SimulationClock  : STD_LOGIC     := '0';
+    signal nSimulationReset : STD_LOGIC     := '0';
 
-    component Core is
-        Port (  Clock       : in STD_LOGIC;
-                nReset      : in STD_LOGIC;
-                Output      : out STD_LOGIC_VECTOR(7 downto 0)
+    component Top is
+        Generic (   SRAM_SIZE   : INTEGER                               := 12;
+                    PM_SIZE     : INTEGER                               := 6
+                    );
+        Port (  Clock           : in STD_LOGIC;
+                nReset          : in STD_LOGIC;
+                PortA           : out STD_LOGIC_VECTOR(7 downto 0);
+                PortB           : out STD_LOGIC_VECTOR(7 downto 0);
+                PortC           : out STD_LOGIC_VECTOR(7 downto 0);
+                PortD           : out STD_LOGIC_VECTOR(7 downto 0)
                 );
     end component;
 
 begin
 
-    UUT : Core port map(  Clock => SimulationClock,
-                          nReset => nSimulationReset,
-                          Output => Output
+    UUT : Top generic map ( SRAM_SIZE => SRAM_SIZE,
+                            PM_SIZE => PM_SIZE
+                            )
+              port map (  Clock => SimulationClock,
+                          nReset => nSimulationReset
                           );
 
     -- Input clock generation
@@ -70,8 +78,6 @@ begin
     process begin
         wait for 10 ns;
         nSimulationReset <= '1';
-        
         wait;
-        
     end process;
 end TinyAVR_TB_Arch;

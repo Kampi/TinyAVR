@@ -7,7 +7,7 @@
 -- Module Name:         ALU_Status - ALU_Status_Arch
 -- Project Name:        TinyAVR
 -- Target Devices: 
--- Tool Versions:       Vivado 2020.1
+-- Tool Versions:       Vivado 2020.2
 -- Description:         Status block for the TinyAVR ALU.
 -- 
 -- Dependencies: 

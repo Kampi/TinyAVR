@@ -7,7 +7,7 @@
 -- Module Name:         RegisterFile - RegisterFile_Arch
 -- Project Name:        TinyCore
 -- Target Devices: 
--- Tool Versions:       Vivado 2020.1
+-- Tool Versions:       Vivado 2020.2
 -- Description:         Register file for the TinyAVR microprocessor.
 --                      This design implements the general purpose register for the TinyAVR microprocessor.
 -- 
@@ -46,10 +46,10 @@ entity RegisterFile is
             UpdateZ     : in STD_LOGIC;                                     -- Update the Z Register pair with the offset address
 
             -- Address inputs
-            DstRegAddr  : in STD_LOGIC_VECTOR(6 downto 0);                  -- Write destination register address
-            RegDAddr    : in STD_LOGIC_VECTOR(6 downto 0);                  -- Register D read address
-            RegRAddr    : in STD_LOGIC_VECTOR(6 downto 0);                  -- Register R read address
-            OffsetAddr  : in SIGNED(1 downto 0);                            -- Address offset for indirect addressing mode
+            DstReg_Addr : in STD_LOGIC_VECTOR(6 downto 0);                  -- Write destination register address
+            RegD_Addr   : in STD_LOGIC_VECTOR(6 downto 0);                  -- Register D read address
+            RegR_Addr   : in STD_LOGIC_VECTOR(6 downto 0);                  -- Register R read address
+            Offset_Addr : in SIGNED(1 downto 0);                            -- Address offset for indirect addressing mode
 
             -- Data inputs
             Source      : in Reg_Source_t;                                  -- Select the input data source for the register file
@@ -80,8 +80,8 @@ architecture RegisterFile_Arch of RegisterFile is
 
 begin
 
-    RegD    <= RegisterFile(to_integer(UNSIGNED(RegDAddr)));
-    RegR    <= RegisterFile(to_integer(UNSIGNED(RegRAddr)));
+    RegD    <= RegisterFile(to_integer(UNSIGNED(RegD_Addr)));
+    RegR    <= RegisterFile(to_integer(UNSIGNED(RegR_Addr)));
     X_Temp  <= RegisterFile(REG_COUNT - 5) & RegisterFile(REG_COUNT - 6);
     Y_Temp  <= RegisterFile(REG_COUNT - 3) & RegisterFile(REG_COUNT - 4);
     Z_Temp  <= RegisterFile(REG_COUNT - 1) & RegisterFile(REG_COUNT - 2);
@@ -93,17 +93,17 @@ begin
         wait until rising_edge(Clock);
 
         if(UpdateX = '1') then
-            Address := UNSIGNED(SIGNED('0' & X_Temp) + resize(OffsetAddr, X_Temp'length + 1));
+            Address := UNSIGNED(SIGNED('0' & X_Temp) + resize(Offset_Addr, X_Temp'length + 1));
 
             RegisterFile(REG_COUNT - 6) <= STD_LOGIC_VECTOR(Address(7 downto 0));
             RegisterFile(REG_COUNT - 5) <= STD_LOGIC_VECTOR(Address(15 downto 8));
         elsif(UpdateY = '1') then
-            Address := UNSIGNED(SIGNED('0' & Y_Temp) + resize(OffsetAddr, Y_Temp'length + 1));
+            Address := UNSIGNED(SIGNED('0' & Y_Temp) + resize(Offset_Addr, Y_Temp'length + 1));
 
             RegisterFile(REG_COUNT - 4) <= STD_LOGIC_VECTOR(Address(7 downto 0));
             RegisterFile(REG_COUNT - 3) <= STD_LOGIC_VECTOR(Address(15 downto 8));
         elsif(UpdateZ = '1') then
-            Address := UNSIGNED(SIGNED('0' & Z_Temp) + resize(OffsetAddr, Z_Temp'length + 1));
+            Address := UNSIGNED(SIGNED('0' & Z_Temp) + resize(Offset_Addr, Z_Temp'length + 1));
 
             RegisterFile(REG_COUNT - 2) <= STD_LOGIC_VECTOR(Address(7 downto 0));
             RegisterFile(REG_COUNT - 1) <= STD_LOGIC_VECTOR(Address(15 downto 8));
@@ -112,23 +112,23 @@ begin
         if(WE = '1') then
             case Source is
                 when SRC_ALU =>
-                    RegisterFile(to_integer(UNSIGNED(DstRegAddr))) <= ALU;
+                    RegisterFile(to_integer(UNSIGNED(DstReg_Addr))) <= ALU;
 
                 when SRC_IMMEDIATE =>
-                    RegisterFile(to_integer(UNSIGNED(DstRegAddr))) <= Immediate;
+                    RegisterFile(to_integer(UNSIGNED(DstReg_Addr))) <= Immediate;
 
                 when SRC_MEMORY =>
-                    RegisterFile(to_integer(UNSIGNED(DstRegAddr))) <= Memory;
+                    RegisterFile(to_integer(UNSIGNED(DstReg_Addr))) <= Memory;
 
                 when SRC_REGISTER =>
                     if(Pair = '1') then
-                        RegisterFile(to_integer(UNSIGNED(DstRegAddr) + 1)) <= RegisterFile(to_integer(UNSIGNED(RegRAddr) + 1));
+                        RegisterFile(to_integer(UNSIGNED(DstReg_Addr) + 1)) <= RegisterFile(to_integer(UNSIGNED(RegR_Addr) + 1));
                     else
-                        RegisterFile(to_integer(UNSIGNED(DstRegAddr))) <= RegisterFile(to_integer(UNSIGNED(RegRAddr)));
+                        RegisterFile(to_integer(UNSIGNED(DstReg_Addr))) <= RegisterFile(to_integer(UNSIGNED(RegR_Addr)));
                     end if;
 
                 when others =>
-                    RegisterFile(to_integer(UNSIGNED(DstRegAddr))) <= (others => 'X');
+                    RegisterFile(to_integer(UNSIGNED(DstReg_Addr))) <= (others => 'X');
 
             end case;
         end if;

@@ -7,7 +7,7 @@
 -- Module Name:         ALU - ALU_Arch
 -- Project Name:        TinyAVR
 -- Target Devices: 
--- Tool Versions:       Vivado 2020.1
+-- Tool Versions:       Vivado 2020.2
 -- Description:         Arithmetic-Logical Unit (ALU) for the TinyAVR microprocessor.
 --                      This design perform different arithmetic and logical operations (add, sub, shift, etc.)
 -- 
@@ -146,7 +146,7 @@ begin
     R <= ArithmeticResult       when ((Operation = ALU_OP_ADC) or (Operation = ALU_OP_ADD) or (Operation = ALU_OP_SBC) or (Operation = ALU_OP_SUB) or (Operation = ALU_OP_NEG)) else
          LogicResult            when ((Operation = ALU_OP_AND) or (Operation = ALU_OP_OR) or (Operation = ALU_OP_NOT) or (Operation = ALU_OP_XOR))                              else
          ShiftResult            when ((Operation = ALU_OP_ASR) or (Operation = ALU_OP_ROR) or (Operation = ALU_OP_LSR) or (Operation = ALU_OP_SWAP))                            else
-         MultiplicationResult   when ((Operation = ALU_OP_MUL_HIGH_U) or (Operation = ALU_OP_MUL_LOW_U))                                                                        else
+         MultiplicationResult   when ((Operation = ALU_OP_MUL_HIGH_U) or (Operation = ALU_OP_MUL_LOW_U) or (Operation = ALU_OP_MUL_HIGH_S) or (Operation = ALU_OP_MUL_LOW_S) or (Operation = ALU_OP_MUL_HIGH_SU) or (Operation = ALU_OP_MUL_LOW_SU))   else
          (others => '0');
 
     H <= ArithmeticH            when ((Operation = ALU_OP_ADC) or (Operation = ALU_OP_ADD) or (Operation = ALU_OP_SBC) or (Operation = ALU_OP_SUB) or (Operation = ALU_OP_NEG)) else
@@ -158,7 +158,7 @@ begin
 
     C <= ArithmeticC            when ((Operation = ALU_OP_ADC) or (Operation = ALU_OP_ADD) or (Operation = ALU_OP_SBC) or (Operation = ALU_OP_SUB) or (Operation = ALU_OP_NEG)) else
          ShiftC                 when ((Operation = ALU_OP_ASR) or (Operation = ALU_OP_ROR) or (Operation = ALU_OP_LSR))                                                         else
-         MultiplicationC        when ((Operation = ALU_OP_MUL_HIGH_U) or (Operation = ALU_OP_MUL_LOW_U))                                                                        else
+         MultiplicationC        when ((Operation = ALU_OP_MUL_HIGH_U) or (Operation = ALU_OP_MUL_LOW_U) or (Operation = ALU_OP_MUL_HIGH_S) or (Operation = ALU_OP_MUL_LOW_S) or (Operation = ALU_OP_MUL_HIGH_SU) or (Operation = ALU_OP_MUL_LOW_SU))   else
          '1'                    when ((Operation = ALU_OP_NOT))                                                                                                                 else
          '0';
 

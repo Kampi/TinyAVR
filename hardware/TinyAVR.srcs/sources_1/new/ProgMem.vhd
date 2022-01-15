@@ -37,6 +37,8 @@ library TinyAVR;
 use TinyAVR.Constants.all;
 
 entity ProgMem is
+    Generic (   PM_SIZE         : INTEGER := 6                                  -- Program memory size in bits
+                );
     Port (  ProgramAddress      : in UNSIGNED(15 downto 0);                     -- Program memory address bus
             ProgramData         : out STD_LOGIC_VECTOR(15 downto 0)             -- Program memory data bus
             );
@@ -61,12 +63,12 @@ architecture ProgMem_Arch of ProgMem is
 
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Arith-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Logic-Test.hex");
-    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Mul-Test.hex");
+    signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Mul-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Rol-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Subroutines/Call-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Bitmanipulation/Bitmanipulation.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Bitmanipulation/CBI_SBI.hex");
-    signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Branch/Branch-Test.hex");
+    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Branch/Branch-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/SRAM/ST_LD_X-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/SRAM/ST_LD_Y-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/SRAM/ST_LD_Z-Test.hex");

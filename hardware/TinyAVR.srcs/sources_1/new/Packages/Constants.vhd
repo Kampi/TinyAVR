@@ -23,9 +23,6 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 package Constants is
 
-    constant SRAM_SIZE              :   INTEGER         := 12;                      -- Address length of the SRAM in bit
-    constant PM_SIZE                :   INTEGER         := 6;                       -- Address length of the Program Memory in bit
-
     subtype Reg_Source_t    is STD_LOGIC_VECTOR(1 downto 0);                        -- Data input source selection
     subtype PC_Mode_t       is STD_LOGIC_VECTOR(1 downto 0);                        -- Program Counter modes
     subtype ALU_Src_t       is STD_LOGIC_VECTOR(1 downto 0);                        -- Input sources for the ALU
@@ -52,10 +49,10 @@ package Constants is
     constant MEM_Z                  :   Sram_Source_t   := "110";                   -- Update from Register with Z Register as address
 
     -- Input data sources
-    constant SRC_ALU                :   Reg_Source_t        := "00";                -- Use the ALU output as data source
-    constant SRC_MEMORY             :   Reg_Source_t        := "01";                -- Use the SRAM output as data source
-    constant SRC_IMMEDIATE          :   Reg_Source_t        := "10";                -- Use a immediate value as data source
-    constant SRC_REGISTER           :   Reg_Source_t        := "11";                -- Use the register file as data source
+    constant SRC_ALU                :   Reg_Source_t    := "00";                    -- Use the ALU output as data source
+    constant SRC_MEMORY             :   Reg_Source_t    := "01";                    -- Use the SRAM output as data source
+    constant SRC_IMMEDIATE          :   Reg_Source_t    := "10";                    -- Use a immediate value as data source
+    constant SRC_REGISTER           :   Reg_Source_t    := "11";                    -- Use the register file as data source
 
     -- Second data source for ALU
     constant ALU_SRC_REG            :   ALU_Src_t       := "00";                    -- Register R as data source
@@ -88,10 +85,12 @@ package Constants is
     constant ALU_SET_T              :   ALU_Op_t        := "10110";                 -- Set the T Flag
 
     -- Multiplication operations
-    constant ALU_OP_MUL_HIGH_U      :   ALU_Op_t        := "10111";                 -- Unsigned high byte multiplication
-    constant ALU_OP_MUL_LOW_U       :   ALU_Op_t        := "11000";                 -- Unsigned low byte multiplication
-    constant ALU_OP_MUL_HIGH_S      :   ALU_Op_t        := "11001";                 -- Signed high byte multiplication
-    constant ALU_OP_MUL_LOW_S       :   ALU_Op_t        := "11010";                 -- Signed low byte multiplication
+    constant ALU_OP_MUL_HIGH_U      :   ALU_Op_t        := "10111";                 -- Unsigned x Unsigned high byte multiplication
+    constant ALU_OP_MUL_LOW_U       :   ALU_Op_t        := "11000";                 -- Unsigned x Unsigned low byte multiplication
+    constant ALU_OP_MUL_HIGH_S      :   ALU_Op_t        := "11001";                 -- Signed x Signed high byte multiplication
+    constant ALU_OP_MUL_LOW_S       :   ALU_Op_t        := "11010";                 -- Signed x Signedlow byte multiplication
+    constant ALU_OP_MUL_HIGH_SU     :   ALU_Op_t        := "11011";                 -- Signed x Unsigned high byte multiplication
+    constant ALU_OP_MUL_LOW_SU      :   ALU_Op_t        := "11100";                 -- Signed x Unsigned low byte multiplication
 
     -- Status bit positions
     constant STATUS_BIT_C           :   INTEGER         := 0;                       -- Bit position of the C (Carry) flag

@@ -7,7 +7,7 @@
 -- Module Name:         ALU_Arithmetic - ALU_Arithmetic_Arch
 -- Project Name:        TinyAVR
 -- Target Devices: 
--- Tool Versions:       Vivado 2020.1
+-- Tool Versions:       Vivado 2020.2
 -- Description:         Arithmetic block for the TinyAVR ALU.
 -- 
 -- Dependencies: 

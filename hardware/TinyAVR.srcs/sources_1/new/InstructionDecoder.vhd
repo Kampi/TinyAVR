@@ -7,7 +7,7 @@
 -- Module Name:         InstructionDecoder - InstructionDecoder_Arch
 -- Project Name:        TinyAVR
 -- Target Devices:      
--- Tool Versions:       Vivado 2020.1
+-- Tool Versions:       Vivado 2020.2
 -- Description:         Instruction decoder for the TinyAVR microprocessor.
 --                      This design is responisble for decoding the current instruction from the
 --                      Instruction Register (IR).
@@ -37,44 +37,46 @@ use TinyAVR.Constants.all;
 use TinyAVR.Opcodes.all;
 
 entity InstructionDecoder is
-    Port (  Clock           : in STD_LOGIC;                                 -- Clock signal
-            nReset          : in STD_LOGIC;                                 -- Reset (active low)
+    Generic (   SRAM_SIZE   : INTEGER := 12                                     -- Address length of the SRAM in bit
+                );
+    Port (  Clock           : in STD_LOGIC;                                     -- Clock signal
+            nReset          : in STD_LOGIC;                                     -- Reset (active low)
 
-            IR              : in STD_LOGIC_VECTOR(15 downto 0);             -- Instruction Register
+            IR              : in STD_LOGIC_VECTOR(15 downto 0);                 -- Instruction Register
 
-            ALU_Operation   : out ALU_Op_t;                                 -- ALU operation
-            ALU_Sel         : out ALU_Src_t;                                -- Select the data source for the ALU
+            ALU_Operation   : out ALU_Op_t;                                     -- ALU operation
+            ALU_Sel         : out ALU_Src_t;                                    -- Select the data source for the ALU
 
-            T_Mask          : out STD_LOGIC_VECTOR(7 downto 0);             -- Mask for T Flag (used by BST and BLD)
+            T_Mask          : out STD_LOGIC_VECTOR(7 downto 0);                 -- Mask for T Flag (used by BST and BLD)
 
-            Register_Source : out Reg_Source_t;                             -- Select the data source for the register file
-            DstRegAddr      : out STD_LOGIC_VECTOR(6 downto 0);             -- Write destination register address
-            RegDAddr        : out STD_LOGIC_VECTOR(6 downto 0);             -- Register D read register address
-            RegRAddr        : out STD_LOGIC_VECTOR(6 downto 0);             -- Register R read register address
-            Immediate       : out STD_LOGIC_VECTOR(7 downto 0);             -- Immediate value
-            Register_WE     : out STD_LOGIC;                                -- Register file write enable signal
-            Register_Pair   : out STD_LOGIC;                                -- Copy register pair (used by MOVW)
-            Offset_Addr     : out SIGNED(1 downto 0);                       -- Address offset for indirect addressing mode
-            UpdateX         : out STD_LOGIC;                                -- Update the X Register pair with the offset address
-            UpdateY         : out STD_LOGIC;                                -- Update the Y Register pair with the offset address
-            UpdateZ         : out STD_LOGIC;                                -- Update the Z Register pair with the offset address
+            Register_Source : out Reg_Source_t;                                 -- Select the data source for the register file
+            DstReg_Addr     : out STD_LOGIC_VECTOR(6 downto 0);                 -- Write destination register address
+            RegD_Addr       : out STD_LOGIC_VECTOR(6 downto 0);                 -- Register D read register address
+            RegR_Addr       : out STD_LOGIC_VECTOR(6 downto 0);                 -- Register R read register address
+            Immediate       : out STD_LOGIC_VECTOR(7 downto 0);                 -- Immediate value
+            Register_WE     : out STD_LOGIC;                                    -- Register file write enable signal
+            Register_Pair   : out STD_LOGIC;                                    -- Copy register pair (used by MOVW)
+            Offset_Addr     : out SIGNED(1 downto 0);                           -- Address offset for indirect addressing mode
+            UpdateX         : out STD_LOGIC;                                    -- Update the X Register pair with the offset address
+            UpdateY         : out STD_LOGIC;                                    -- Update the Y Register pair with the offset address
+            UpdateZ         : out STD_LOGIC;                                    -- Update the Z Register pair with the offset address
 
-            Memory_Data     : inout STD_LOGIC_VECTOR(7 downto 0);           -- SRAM data bus
-            Memory_WE       : out STD_LOGIC;                                -- SRAM write enable signal
-            Memory_Enable   : out STD_LOGIC;                                -- SRAM enable signal
-            Memory_Address  : out STD_LOGIC_VECTOR(7 downto 0);             -- SRAM memory address
-            Memory_Source   : out Sram_Source_t;                            -- SRAM data source
+            Memory_Data     : inout STD_LOGIC_VECTOR(7 downto 0);               -- SRAM data bus
+            Memory_WE       : out STD_LOGIC;                                    -- SRAM write enable signal
+            Memory_Enable   : out STD_LOGIC;                                    -- SRAM enable signal
+            Memory_Address  : out STD_LOGIC_VECTOR((SRAM_SIZE - 1) downto 0);   -- SRAM memory address
+            Memory_Source   : out Sram_Source_t;                                -- SRAM data source
 
-            PC              : in UNSIGNED(15 downto 0);                     -- Program address from Programm Counter
-            PC_Addr         : out UNSIGNED(15 downto 0);                    -- Program address for Programm Counter
-            PC_Mode         : out PC_Mode_t;                                -- Program Counter mode
-            PC_Offset       : out SIGNED(11 downto 0);                      -- Address offset for the Programm Counter
+            PC              : in UNSIGNED(15 downto 0);                         -- Program address from Programm Counter
+            PC_Addr         : out UNSIGNED(15 downto 0);                        -- Program address for Programm Counter
+            PC_Mode         : out PC_Mode_t;                                    -- Program Counter mode
+            PC_Offset       : out SIGNED(11 downto 0);                          -- Address offset for the Programm Counter
 
-            StackPointerIn  : in STD_LOGIC_VECTOR(15 downto 0);             -- Stack pointer input
-            StackPointerOut : out STD_LOGIC_VECTOR(15 downto 0);            -- Stack pointer output
+            StackPointerIn  : in STD_LOGIC_VECTOR(15 downto 0);                 -- Stack pointer input
+            StackPointerOut : out STD_LOGIC_VECTOR(15 downto 0);                -- Stack pointer output
 
-            SREG_Mask       : out Bit_Mask_t;                               -- Status Register modification mask
-            SREG            : in STD_LOGIC_VECTOR(7 downto 0)               -- Status Register input
+            SREG_Mask       : out Bit_Mask_t;                                   -- Status Register modification mask
+            SREG            : in STD_LOGIC_VECTOR(7 downto 0)                   -- Status Register input
             );
 end InstructionDecoder;
 
@@ -177,9 +179,7 @@ begin
             if(ClockCycle = 0) then
                 PC_Mode         <= PC_KEEP;
                 ALU_Operation   <= ALU_OP_ADD;
-            end if;
-
-            if(ClockCycle = 1) then
+            elsif(ClockCycle = 1) then
                 ImData          := (others => '0');
                 ALU_Operation   <= ALU_OP_ADC;
             end if;
@@ -224,13 +224,13 @@ begin
         --  - Set the modified SRAM as data for the SRAM
         --  - Set the memory address to the SRAM
         if(std_match(IR, OpBCLR)) then
-            Register_WE     <= '0';
-            Memory_Enable   <= '1';
-            Memory_WE       <= '1';
+            Register_WE                                     <= '0';
+            Memory_Enable                                   <= '1';
+            Memory_WE                                       <= '1';
             SREG_Temp(to_integer(UNSIGNED(IR(6 downto 4)))) := '0';
-            Memory_Source   <= MEM_MEMORY;
-            Memory_Data     <= SREG_Temp;
-            Memory_Address  <= STD_LOGIC_VECTOR(to_unsigned(16#3F#, Memory_Address'length));
+            Memory_Source                                   <= MEM_MEMORY;
+            Memory_Data                                     <= SREG_Temp;
+            Memory_Address                                  <= STD_LOGIC_VECTOR(to_unsigned(16#3F#, Memory_Address'length));
         end if;
 
         -- BLD instruction
@@ -298,13 +298,13 @@ begin
         --  - Set the modified SRAM as data for the SRAM
         --  - Set the memory address to the SRAM
         if(std_match(IR, OpBSET)) then
-            Register_WE     <= '0';
-            Memory_Enable   <= '1';
-            Memory_WE       <= '1';
+            Register_WE                                     <= '0';
+            Memory_Enable                                   <= '1';
+            Memory_WE                                       <= '1';
             SREG_Temp(to_integer(UNSIGNED(IR(6 downto 4)))) := '1';
-            Memory_Source   <= MEM_MEMORY;
-            Memory_Data     <= SREG_Temp;
-            Memory_Address  <= STD_LOGIC_VECTOR(to_unsigned(16#3F#, Memory_Address'length));
+            Memory_Source                                   <= MEM_MEMORY;
+            Memory_Data                                     <= SREG_Temp;
+            Memory_Address                                  <= STD_LOGIC_VECTOR(to_unsigned(16#3F#, Memory_Address'length));
         end if;
 
         -- BST instruction
@@ -318,9 +318,9 @@ begin
             Memory_Enable           <= '1';
             Memory_WE               <= '1';
             Register_WE             <= '0';
-            T_Mask                  <= STD_LOGIC_VECTOR(resize(UNSIGNED(IR(2 downto 0)), T_Mask'length));
             SREG_Mask(STATUS_BIT_T) <= '1';
             ALU_Operation           <= ALU_SET_T;
+            T_Mask                  <= STD_LOGIC_VECTOR(resize(UNSIGNED(IR(2 downto 0)), T_Mask'length));
         end if;
 
         -- CALL instruction
@@ -338,9 +338,9 @@ begin
         --              Set the bit
         --              Copy the data into the memory
         if(std_match(IR, OpCBI)) then
-            Memory_Enable   <= '1';
-            Memory_Address  <= "001" & IR(7 downto 3);
-            Memory_Source   <= MEM_MEMORY;
+            Memory_Enable       <= '1';
+            Memory_Address      <= "0000001" & IR(7 downto 3);
+            Memory_Source       <= MEM_MEMORY;
 
             if(ClockCycle = 0) then
                 PC_Mode         <= PC_KEEP;
@@ -710,60 +710,68 @@ begin
         --  - Set the address of the source register (address has to be multiplied by 2)
         --  - Set the address of the destination register (address has to be multiplied by 2)
         if(std_match(IR, OpMOVW)) then
-            Register_Source <= SRC_REGISTER;
             RegR            := "00" & IR(3 downto 0) & "0";
             Dst             := "00" & IR(7 downto 4) & "0";
+            Register_Source <= SRC_REGISTER;
             Register_Pair   <= '1';
         end if;
 
         -- MUL instruction
-        --  - Flag the changeable status flags
-        --  - 1. Clock: Hold the PC
-        --              Set the ALU operation to "MUL_LOW"
-        --              Set the destination register to R0
-        --              Enable the Carry-Flag to update
-        --  - 2. Clock: Set the ALU operation to "MUL_HIGH"
-        --              Set the destination register to R1
-        --              Enable the Zero-Flag to update
+        --  - 1. Clock: Set the destination register to R0
+        --              Hold the PC
+        --              Set the ALU operation to "MUL_LOW_U"
+        --  - 2. Clock: Set the destination register to R1
+        --              Set the ALU operation to "MUL_HIGH_U"
+        --              Enable the Zero-Flag and Carry-Flag to update
         if(std_match(IR, OpMUL)) then
             if(ClockCycle = 0) then
+                Dst             := (others => '0');
                 PC_Mode         <= PC_KEEP;
                 ALU_Operation   <= ALU_OP_MUL_LOW_U;
-                Dst             := (others => '0');
-                SREG_Mask       <= STATUS_FLAG_C;
             elsif(ClockCycle = 1) then
-                ALU_Operation   <= ALU_OP_MUL_HIGH_U;
                 Dst             := ((0) => '1', others => '0');
-                SREG_Mask       <= STATUS_FLAG_Z;
+                ALU_Operation   <= ALU_OP_MUL_HIGH_U;
+                SREG_Mask       <= STATUS_FLAG_ZC;
             end if;
         end if;
 
         -- MULS instruction
-        --  - Flag the changeable status flags
-        --  - 1. Clock: Hold the PC
-        --              Set the ALU operation to low byte multiplication
-        --              Set the destination register to R0
+        --  - 1. Clock: Set the destination register to R0
+        --              Hold the PC
+        --              Set the ALU operation to "MUL_LOW_S"
         --              Enable the Carry-Flag to update
-        --  - 2. Clock: Set the ALU operation to high byte multiplication
-        --              Set the destination register to R1
+        --  - 2. Clock: Set the destination register to R1
+        --              Set the ALU operation to "MUL_HIGH_S"
         --              Enable the Zero-Flag to update
         if(std_match(IR, OpMULS)) then
             RegD                := "001" & IR(7 downto 4);
             RegR                := "001" & IR(3 downto 0);
             if(ClockCycle = 0) then
+                Dst             := (others => '0');
                 PC_Mode         <= PC_KEEP;
                 ALU_Operation   <= ALU_OP_MUL_LOW_S;
-                Dst             := (others => '0');
                 SREG_Mask       <= STATUS_FLAG_C;
             elsif(ClockCycle = 1) then
-                ALU_Operation   <= ALU_OP_MUL_HIGH_S;
                 Dst             := ((0) => '1', others => '0');
+                ALU_Operation   <= ALU_OP_MUL_HIGH_S;
                 SREG_Mask       <= STATUS_FLAG_Z;
             end if;
         end if;
 
         -- MULSU instruction
         if(std_match(IR, OpMULSU)) then
+            RegD                := "001" & IR(7 downto 4);
+            RegR                := "001" & IR(3 downto 0);
+            if(ClockCycle = 0) then
+                Dst             := (others => '0');
+                PC_Mode         <= PC_KEEP;
+                ALU_Operation   <= ALU_OP_MUL_LOW_SU;
+                SREG_Mask       <= STATUS_FLAG_C;
+            elsif(ClockCycle = 1) then
+                Dst             := ((0) => '1', others => '0');
+                ALU_Operation   <= ALU_OP_MUL_HIGH_SU;
+                SREG_Mask       <= STATUS_FLAG_Z;
+            end if;
         end if;
 
         -- NEG instruction
@@ -968,7 +976,7 @@ begin
         --              Copy the data into the memory
         if(std_match(IR, OpSBI)) then
             Memory_Enable       <= '1';
-            Memory_Address      <= "001" & IR(7 downto 3);
+            Memory_Address      <= "0000001" & IR(7 downto 3);
             Memory_Source       <= MEM_MEMORY;
 
             if(ClockCycle = 0) then
@@ -992,23 +1000,23 @@ begin
         --  - 2. Clock: Clear the immediate value
         --              Set the ALU operation to "SBC"
         if(std_match(IR, OpSBIW)) then
-            SREG_Mask       <= STATUS_FLAG_SVNZC;
-            ALU_Sel         <= ALU_SRC_IMMEDIATE;
-            ImData          := STD_LOGIC_VECTOR(resize(UNSIGNED(IR(7 downto 6) & IR(3 downto 0)), ImData'length));
+            SREG_Mask           <= STATUS_FLAG_SVNZC;
+            ALU_Sel             <= ALU_SRC_IMMEDIATE;
+            ImData              := STD_LOGIC_VECTOR(resize(UNSIGNED(IR(7 downto 6) & IR(3 downto 0)), ImData'length));
 
             case IR(5 downto 4) is
                 when "00" =>
-                    RegD    := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, RegD'length));
-                    Dst     := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, Dst'length));
+                    RegD        := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, RegD'length));
+                    Dst         := STD_LOGIC_VECTOR(to_unsigned(24 + ClockCycle, Dst'length));
                 when "01" =>
-                    RegD    := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, RegD'length));
-                    Dst     := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, Dst'length));
+                    RegD        := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, RegD'length));
+                    Dst         := STD_LOGIC_VECTOR(to_unsigned(26 + ClockCycle, Dst'length));
                 when "10" =>
-                    RegD    := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, RegD'length));
-                    Dst     := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, Dst'length));
+                    RegD        := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, RegD'length));
+                    Dst         := STD_LOGIC_VECTOR(to_unsigned(28 + ClockCycle, Dst'length));
                 when "11" =>
-                    RegD    := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, RegD'length));
-                    Dst     := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, Dst'length));
+                    RegD        := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, RegD'length));
+                    Dst         := STD_LOGIC_VECTOR(to_unsigned(30 + ClockCycle, Dst'length));
                 when others =>
             end case;
 
@@ -1065,9 +1073,9 @@ begin
                     Memory_Source   <= MEM_X;
                 end if;
             elsif(ClockCycle = 1) then
-                Memory_Enable   <= '1';
-                Memory_WE       <= '1';
-                Memory_Source   <= MEM_X;
+                Memory_Enable       <= '1';
+                Memory_WE           <= '1';
+                Memory_Source       <= MEM_X;
             end if;
         end if;
 
@@ -1111,9 +1119,9 @@ begin
                     Memory_Source   <= MEM_Y;
                 end if;
             elsif(ClockCycle = 1) then
-                Memory_Enable   <= '1';
-                Memory_WE       <= '1';
-                Memory_Source   <= MEM_Y;
+                Memory_Enable       <= '1';
+                Memory_WE           <= '1';
+                Memory_Source       <= MEM_Y;
             end if;
         end if;
 
@@ -1157,9 +1165,9 @@ begin
                     Memory_Source   <= MEM_Z;
                 end if;
             elsif(ClockCycle = 1) then
-                Memory_Enable   <= '1';
-                Memory_WE       <= '1';
-                Memory_Source   <= MEM_Z;
+                Memory_Enable       <= '1';
+                Memory_WE           <= '1';
+                Memory_Source       <= MEM_Z;
             end if;
         end if;
 
@@ -1202,10 +1210,10 @@ begin
         if(std_match(IR, OpXCH)) then
         end if;
 
-        DstRegAddr <= Dst;
-        RegDAddr <= RegD;
-        RegRAddr <= RegR;
-        Immediate <= ImData;
+        DstReg_Addr <= Dst;
+        RegD_Addr   <= RegD;
+        RegR_Addr   <= RegR;
+        Immediate   <= ImData;
     end process;
 
     UpdateClockCycle : process

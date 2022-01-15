@@ -7,7 +7,7 @@
 -- Module Name:         ALU_Shift - ALU_Shift_Arch
 -- Project Name:        TinyAVR
 -- Target Devices: 
--- Tool Versions:       Vivado 2020.1
+-- Tool Versions:       Vivado 2020.2
 -- Description:         Shift block for the TinyAVR ALU.
 -- 
 -- Dependencies: 

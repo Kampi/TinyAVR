@@ -7,7 +7,7 @@
 -- Module Name:         ALU_Multiplication - ALU_Multiplication_Arch
 -- Project Name:        TinyAVR
 -- Target Devices: 
--- Tool Versions:       Vivado 2020.1
+-- Tool Versions:       Vivado 2020.2
 -- Description:         Multiplication block for the TinyAVR ALU.
 -- 
 -- Dependencies: 
@@ -44,28 +44,39 @@ end ALU_Multiplication;
 
 architecture ALU_Multiplication_Arch of ALU_Multiplication is
 
-    signal Partial              : STD_LOGIC_VECTOR(13 downto 0)             := (others => '0');
-    signal Transfer             : STD_LOGIC_VECTOR(5 downto 0)              := (others => '0');
+    signal Overflow     : STD_LOGIC                             := '0';
+    signal Result_UU    : STD_LOGIC_VECTOR(15 downto 0)         := (others => '0');
+    signal Result_SS    : STD_LOGIC_VECTOR(15 downto 0)         := (others => '0');
+    signal Result_SU    : STD_LOGIC_VECTOR(15 downto 0)         := (others => '0');
 
 begin
 
-    process(A, B, Operation, Transfer)
+    Overflow    <= A(7) and B(7);
+
+    Result_UU   <= STD_LOGIC_VECTOR(UNSIGNED(A) * UNSIGNED(B));
+    Result_SS   <= STD_LOGIC_VECTOR(SIGNED(A) * SIGNED(B));
+    Result_SU   <= STD_LOGIC_VECTOR(UNSIGNED(SIGNED(A)) * UNSIGNED(B));
+
+    process(A, B, Operation, Overflow, Result_UU, Result_SS, Result_SU)
     begin
         if(Operation = ALU_OP_MUL_LOW_U) then
-            Partial <= STD_LOGIC_VECTOR(("00" & UNSIGNED(A(3 downto 0)) * UNSIGNED(B(7 downto 4)) & "0000") +
-                                         ("00" & UNSIGNED(A(7 downto 4)) * UNSIGNED(B(3 downto 0)) & "0000") +
-                                         ("000000" & UNSIGNED(A(3 downto 0)) * UNSIGNED(B(3 downto 0))));
+            R <= Result_UU(7 downto 0);
         elsif(Operation = ALU_OP_MUL_HIGH_U) then
-            Partial <= STD_LOGIC_VECTOR(("000000" & UNSIGNED(A(7 downto 4)) * UNSIGNED(B(7 downto 4))) + UNSIGNED("00000000" & Transfer));
+            R <= Result_UU(15 downto 8);
+        elsif(Operation = ALU_OP_MUL_LOW_S) then
+            R <= Result_SS(7 downto 0);
+        elsif(Operation = ALU_OP_MUL_HIGH_S) then
+            R <= Result_SS(15 downto 8);
+        elsif(Operation = ALU_OP_MUL_LOW_SU) then
+            R <= Result_SU(7 downto 0);
+        elsif(Operation = ALU_OP_MUL_HIGH_SU) then
+            R <= Result_SU(15 downto 8);
+            R(0) <= Result_SU(8) or Overflow;
         end if;
     end process;
 
-    process(Partial)
-    begin
-        Transfer <= STD_LOGIC_VECTOR(Partial(13 downto 8));
-        C <= Partial(8);
-    end process;
-
-    R <= Partial(7 downto 0);
+    C <= Result_UU(15) when (Operation = ALU_OP_MUL_HIGH_U) else
+         Result_SS(15) when (Operation = ALU_OP_MUL_HIGH_S) else
+         Result_SU(15) when (Operation = ALU_OP_MUL_HIGH_SU);
 
 end ALU_Multiplication_Arch;

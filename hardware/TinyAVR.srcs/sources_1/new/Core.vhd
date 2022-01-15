@@ -7,7 +7,7 @@
 -- Module Name:         Core - Core_Arch
 -- Project Name:        TinyAVR
 -- Target Devices:      
--- Tool Versions:       Vivado 2020.1
+-- Tool Versions:       Vivado 2020.2
 -- Description:         CPU core module for the TinyAVR microprocessor.
 -- 
 -- Dependencies:        
@@ -34,56 +34,66 @@ library TinyAVR;
 use TinyAVR.Constants.all;
 
 entity Core is
-    Port (  Clock       : in STD_LOGIC;
-            nReset      : in STD_LOGIC;
-            Output      : out STD_LOGIC_VECTOR(7 downto 0)
+    Generic (   SRAM_SIZE   : INTEGER := 12
+                );
+    Port (  Clock           : in STD_LOGIC;
+            nReset          : in STD_LOGIC;
+
+            -- Program memory interface
+            Prog_Addr       : out UNSIGNED(15 downto 0);
+            Prog_Mem        : in STD_LOGIC_VECTOR(15 downto 0);
+
+            -- SRAM interface
+            SRAM_Source     : out Sram_Source_t;
+            SRAM_WE         : out STD_LOGIC;
+            SRAM_Enable     : out STD_LOGIC;
+            SRAM_X          : out STD_LOGIC_VECTOR(15 downto 0);
+            SRAM_Y          : out STD_LOGIC_VECTOR(15 downto 0);
+            SRAM_Z          : out STD_LOGIC_VECTOR(15 downto 0);
+            SRAM_Data       : inout STD_LOGIC_VECTOR(7 downto 0);
+            SRAM_Address    : out STD_LOGIC_VECTOR((SRAM_SIZE - 1) downto 0);
+            SRAM_RegD       : out STD_LOGIC_VECTOR(7 downto 0);
+            SRAM_Status     : out STD_LOGIC_VECTOR(7 downto 0);
+            SRAM_SREG       : in STD_LOGIC_VECTOR(7 downto 0);
+            StackPointerIn  : out STD_LOGIC_VECTOR(15 downto 0);
+            StackPointerOut : in STD_LOGIC_VECTOR(15 downto 0)
             );
 end Core;
 
 architecture Core_Arch of Core is
 
     signal RegisterWE           : STD_LOGIC;
-    signal MemoryWE             : STD_LOGIC;
-    signal MemoryEnable         : STD_LOGIC;
     signal Pair                 : STD_LOGIC;
     signal UpdateX              : STD_LOGIC;
     signal UpdateY              : STD_LOGIC;
     signal UpdateZ              : STD_LOGIC;
 
-    signal MemoryAddress        : STD_LOGIC_VECTOR(7 downto 0);
     signal X                    : STD_LOGIC_VECTOR(15 downto 0);
     signal Y                    : STD_LOGIC_VECTOR(15 downto 0);
     signal Z                    : STD_LOGIC_VECTOR(15 downto 0);
     signal IR                   : STD_LOGIC_VECTOR(15 downto 0);
-    signal ProgData             : STD_LOGIC_VECTOR(15 downto 0);
     signal T_Mask               : STD_LOGIC_VECTOR(7 downto 0);
-    signal Stack                : STD_LOGIC_VECTOR(7 downto 0);
-    signal Memory               : STD_LOGIC_VECTOR(7 downto 0);
     signal Immediate            : STD_LOGIC_VECTOR(7 downto 0);
     signal RegD                 : STD_LOGIC_VECTOR(7 downto 0);
     signal RegR                 : STD_LOGIC_VECTOR(7 downto 0);
-    signal ALUStatus            : STD_LOGIC_VECTOR(7 downto 0);
-    signal ALUOut               : STD_LOGIC_VECTOR(7 downto 0);
-    signal SREG                 : STD_LOGIC_VECTOR(7 downto 0);
-    signal DstRegAddr           : STD_LOGIC_VECTOR(6 downto 0);
-    signal RegDAddr             : STD_LOGIC_VECTOR(6 downto 0);
-    signal RegRAddr             : STD_LOGIC_VECTOR(6 downto 0);
-    signal StackPointerIn       : STD_LOGIC_VECTOR(15 downto 0);
-    signal StackPointerOut      : STD_LOGIC_VECTOR(15 downto 0);
+    signal ALU_Status           : STD_LOGIC_VECTOR(7 downto 0);
+    signal ALU_Out              : STD_LOGIC_VECTOR(7 downto 0);
+    signal DstReg_Addr          : STD_LOGIC_VECTOR(6 downto 0);
+    signal RegD_Addr            : STD_LOGIC_VECTOR(6 downto 0);
+    signal RegR_Addr            : STD_LOGIC_VECTOR(6 downto 0);
 
-    signal PCOffset             : SIGNED(11 downto 0);
-    signal RegOffset            : SIGNED(1 downto 0);
-    signal ProgAddr             : UNSIGNED(15 downto 0);
-    signal PCAddr               : UNSIGNED(15 downto 0);
+    signal Offset_Addr          : SIGNED(1 downto 0);
+    signal PC_Offset            : SIGNED(11 downto 0);
+    signal PC                   : UNSIGNED(15 downto 0);
+    signal PC_Addr              : UNSIGNED(15 downto 0);
 
     signal PC_Mode              : PC_Mode_t;
     signal Register_Source      : Reg_Source_t;
     signal ALU_Sel              : ALU_Src_t;
     signal ALU_Operation        : ALU_Op_t;
     signal SREG_Mask            : Bit_Mask_t;
-    signal MemorySource         : Sram_Source_t;
 
-    component PC is
+    component ProgCounter is
         Port (  Clock           : in STD_LOGIC;
                 nReset          : in STD_LOGIC;
                 Mode            : in PC_Mode_t;
@@ -96,12 +106,6 @@ architecture Core_Arch of Core is
                 );
     end component;
 
-    component PM is
-        Port (  ProgramAddress  : in UNSIGNED(15 downto 0);
-                ProgramData     : out STD_LOGIC_VECTOR(15 downto 0)
-                );
-    end component;
-    
     component RegisterFile is
         Port (  Clock           : in STD_LOGIC;
                 nReset          : in STD_LOGIC;
@@ -110,10 +114,10 @@ architecture Core_Arch of Core is
                 UpdateX         : in STD_LOGIC;
                 UpdateY         : in STD_LOGIC;
                 UpdateZ         : in STD_LOGIC;
-                DstRegAddr      : in STD_LOGIC_VECTOR(6 downto 0);
-                RegDAddr        : in STD_LOGIC_VECTOR(6 downto 0);
-                RegRAddr        : in STD_LOGIC_VECTOR(6 downto 0);
-                OffsetAddr      : in SIGNED(1 downto 0);
+                DstReg_Addr     : in STD_LOGIC_VECTOR(6 downto 0);
+                RegD_Addr       : in STD_LOGIC_VECTOR(6 downto 0);
+                RegR_Addr       : in STD_LOGIC_VECTOR(6 downto 0);
+                Offset_Addr     : in SIGNED(1 downto 0);
                 Source          : in Reg_Source_t;
                 ALU             : in STD_LOGIC_VECTOR(7 downto 0);
                 Immediate       : in STD_LOGIC_VECTOR(7 downto 0);
@@ -141,6 +145,8 @@ architecture Core_Arch of Core is
     end component;
 
     component InstructionDecoder is
+        Generic (   SRAM_SIZE   : INTEGER := 12
+                    );
         Port (  Clock           : in STD_LOGIC;
                 nReset          : in STD_LOGIC;
                 IR              : in STD_LOGIC_VECTOR(15 downto 0);
@@ -148,9 +154,9 @@ architecture Core_Arch of Core is
                 ALU_Sel         : out ALU_Src_t;
                 T_Mask          : out STD_LOGIC_VECTOR(7 downto 0);
                 Register_Source : out Reg_Source_t;
-                DstRegAddr      : out STD_LOGIC_VECTOR(6 downto 0);
-                RegDAddr        : out STD_LOGIC_VECTOR(6 downto 0);
-                RegRAddr        : out STD_LOGIC_VECTOR(6 downto 0);
+                DstReg_Addr     : out STD_LOGIC_VECTOR(6 downto 0);
+                RegD_Addr       : out STD_LOGIC_VECTOR(6 downto 0);
+                RegR_Addr       : out STD_LOGIC_VECTOR(6 downto 0);
                 Immediate       : out STD_LOGIC_VECTOR(7 downto 0);
                 Register_WE     : out STD_LOGIC;
                 Register_Pair   : out STD_LOGIC;
@@ -161,7 +167,7 @@ architecture Core_Arch of Core is
                 Memory_Data     : inout STD_LOGIC_VECTOR(7 downto 0);
                 Memory_WE       : out STD_LOGIC;
                 Memory_Enable   : out STD_LOGIC;
-                Memory_Address  : out STD_LOGIC_VECTOR(7 downto 0);
+                Memory_Address  : out STD_LOGIC_VECTOR((SRAM_SIZE - 1) downto 0);
                 Memory_Source   : out Sram_Source_t;
                 SREG_Mask       : out Bit_Mask_t;
                 SREG            : in STD_LOGIC_VECTOR(7 downto 0);
@@ -174,41 +180,18 @@ architecture Core_Arch of Core is
                 );
     end component;
 
-    component SRAM is
-        Port (  Clock           : in STD_LOGIC;
-                nReset          : in STD_LOGIC;
-                WE              : in STD_LOGIC;
-                Enable          : in STD_LOGIC;
-                Address         : in STD_LOGIC_VECTOR(7 downto 0);
-                X               : in STD_LOGIC_VECTOR(15 downto 0);
-                Y               : in STD_LOGIC_VECTOR(15 downto 0);
-                Z               : in STD_LOGIC_VECTOR(15 downto 0);
-                Source          : in Sram_Source_t;
-                StatusRegIn     : in STD_LOGIC_VECTOR(7 downto 0); 
-                RegisterIn      : in STD_LOGIC_VECTOR(7 downto 0);
-                StackPointerIn  : in STD_LOGIC_VECTOR(15 downto 0);
-                StatusRegOut    : out STD_LOGIC_VECTOR(7 downto 0);
-                StackPointerOut : out STD_LOGIC_VECTOR(15 downto 0);
-                Data            : inout STD_LOGIC_VECTOR(7 downto 0)
-                );
-    end component;
-
 begin
 
-    PC_i        : component PC port map (   Clock => Clock,
-                                            nReset => nReset,
-                                            Prog_Mem => ProgData,
-                                            IR => IR,
-                                            Mode => PC_Mode,
-                                            Addr_Offset => PCOffset,
-                                            Addr => PCAddr,
-                                            Z => Z,
-                                            Prog_Addr => ProgAddr
-                                            );
-
-    PM_i        : component PM port map (   ProgramAddress => ProgAddr,
-                                            ProgramData => ProgData
-                                            );
+    PC_i        : component ProgCounter port map (  Clock => Clock,
+                                                    nReset => nReset,
+                                                    Prog_Mem => Prog_Mem,
+                                                    IR => IR,
+                                                    Mode => PC_Mode,
+                                                    Addr_Offset => PC_Offset,
+                                                    Addr => PC_Addr,
+                                                    Z => Z,
+                                                    Prog_Addr => PC
+                                                    );
 
     Register_i  : component RegisterFile port map ( Clock => Clock,
                                                     nReset => nReset,
@@ -217,14 +200,14 @@ begin
                                                     UpdateX => UpdateX,
                                                     UpdateY => UpdateY,
                                                     UpdateZ => UpdateZ,
-                                                    DstRegAddr => DstRegAddr,
-                                                    RegDAddr => RegDAddr,
-                                                    RegRAddr => RegRAddr,
-                                                    OffsetAddr => RegOffset,
+                                                    DstReg_Addr => DstReg_Addr,
+                                                    RegD_Addr => RegD_Addr,
+                                                    RegR_Addr => RegR_Addr,
+                                                    Offset_Addr => Offset_Addr,
                                                     Source => Register_Source,
-                                                    ALU => ALUOut,
+                                                    ALU => ALU_Out,
                                                     Immediate => Immediate,
-                                                    Memory => Memory,
+                                                    Memory => SRAM_Data,
                                                     RegD => RegD,
                                                     RegR => RegR,
                                                     X => X,
@@ -233,64 +216,56 @@ begin
                                                     );
 
     ALU_i       : component ALU port map (  Operation => ALU_Operation,
-                                            SREGIn => SREG,
+                                            SREGIn => SRAM_SREG,
                                             Sel => ALU_Sel,
                                             T_Mask => T_Mask,
                                             Mask => SREG_Mask,
                                             RegD => RegD,
                                             RegR => RegR,
                                             Immediate => Immediate,
-                                            Result => ALUOut,
-                                            SREGOut => ALUStatus
+                                            Result => ALU_Out,
+                                            SREGOut => ALU_Status
                                             );
 
-    Ctrl_i      : component InstructionDecoder port map (   Clock => Clock,
+    Ctrl_i      : component InstructionDecoder generic map ( SRAM_SIZE => SRAM_SIZE
+                                                             )
+                                               port map (   Clock => Clock,
                                                             nReset => nReset,
                                                             IR => IR,
                                                             Register_WE => RegisterWE, 
                                                             Register_Pair => Pair,
-                                                            Offset_Addr => RegOffset,
+                                                            Offset_Addr => Offset_Addr,
                                                             UpdateX => UpdateX,
                                                             UpdateY => UpdateY,
                                                             UpdateZ => UpdateZ,
-                                                            DstRegAddr => DstRegAddr,
-                                                            RegDAddr => RegDAddr,
-                                                            RegRAddr => RegRAddr,
+                                                            DstReg_Addr => DstReg_Addr,
+                                                            RegD_Addr => RegD_Addr,
+                                                            RegR_Addr => RegR_Addr,
                                                             Immediate => Immediate,
                                                             Register_Source => Register_Source,
                                                             T_Mask => T_Mask,
                                                             ALU_Sel => ALU_Sel,
                                                             ALU_Operation => ALU_Operation,
-                                                            PC => ProgAddr,
-                                                            PC_Addr => PCAddr,
+                                                            PC => PC,
+                                                            PC_Addr => PC_Addr,
                                                             PC_Mode => PC_Mode,
-                                                            PC_Offset => PCOffset,
+                                                            PC_Offset => PC_Offset,
                                                             SREG_Mask => SREG_Mask,
-                                                            SREG => SREG,
-                                                            Memory_Data => Memory,
-                                                            Memory_WE => MemoryWE,
-                                                            Memory_Enable => MemoryEnable,
-                                                            Memory_Address => MemoryAddress,
-                                                            Memory_Source => MemorySource,
+                                                            SREG => SRAM_SREG,
+                                                            Memory_Data => SRAM_Data,
+                                                            Memory_WE => SRAM_WE,
+                                                            Memory_Enable => SRAM_Enable,
+                                                            Memory_Address => SRAM_Address,
+                                                            Memory_Source => SRAM_Source,
                                                             StackPointerIn => StackPointerOut,
                                                             StackPointerOut => StackPointerIn
                                                             );
 
-    SRAM_i      : component SRAM port map ( Clock => Clock,
-                                            nReset => nReset,
-                                            WE => MemoryWE,
-                                            Source => MemorySource,
-                                            Enable => MemoryEnable,
-                                            Address => MemoryAddress,
-                                            RegisterIn => RegD,
-                                            StatusRegOut => SREG,
-                                            StatusRegIn => ALUStatus,
-                                            X => X,
-                                            Y => Y,
-                                            Z => Z,
-                                            StackPointerIn => StackPointerIn,
-                                            StackPointerOut => StackPointerOut,
-                                            Data => Memory
-                                            );
+    SRAM_Status <= ALU_Status;
+    SRAM_RegD <= RegD;
+    SRAM_X <= X;
+    SRAM_Y <= Y;
+    SRAM_Z <= Z;
+    Prog_Addr <= PC;
 
 end Core_Arch;

@@ -7,7 +7,7 @@
 -- Module Name:         SRAM - SRAM_Arch
 -- Project Name:        TinyAVR
 -- Target Devices:      
--- Tool Versions:       Vivado 2020.1
+-- Tool Versions:       Vivado 2020.2
 -- Description:         SRAM module for the TinyAVR microprocessor.
 -- 
 -- Dependencies:        
@@ -35,6 +35,8 @@ use TinyAVR.Constants.all;
 use TinyAVR.Opcodes.all;
 
 entity SRAM is
+    Generic (   SRAM_SIZE   : INTEGER := 12                                     -- Address length of the SRAM in bit
+            );
     Port (  Clock           : in STD_LOGIC;                                     -- Clock signal
             nReset          : in STD_LOGIC;                                     -- Reset (active low)
             WE              : in STD_LOGIC;                                     -- Write enable signal
@@ -47,7 +49,7 @@ entity SRAM is
             StackPointerIn  : in STD_LOGIC_VECTOR(15 downto 0);                 -- Stack pointer input
 
             -- Address inputs
-            Address         : in STD_LOGIC_VECTOR(7 downto 0);                  -- SRAM memory address
+            Address         : in STD_LOGIC_VECTOR((SRAM_SIZE - 1) downto 0);    -- SRAM memory address
             X               : in STD_LOGIC_VECTOR(15 downto 0);                 -- X register input
             Y               : in STD_LOGIC_VECTOR(15 downto 0);                 -- Y register input
             Z               : in STD_LOGIC_VECTOR(15 downto 0);                 -- Z register input
