@@ -1,0 +1,727 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="TinyAVR_TB_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="TinyAVR_TB" />
+            <top_module name="constants" />
+            <top_module name="opcodes" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="48666fs"></ZoomStartTime>
+      <ZoomEndTime time="340667fs"></ZoomEndTime>
+      <Cursor1Time time="209093fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="207"></NameColumnWidth>
+      <ValueColumnWidth column_width="62"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="12" />
+   <wvobject fp_name="group5" type="group">
+      <obj_property name="label">Simulation input</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TinyAVR_TB/SimulationClock" type="logic">
+         <obj_property name="ElementShortName">SimulationClock</obj_property>
+         <obj_property name="ObjectShortName">SimulationClock</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/nSimulationReset" type="logic">
+         <obj_property name="ElementShortName">nSimulationReset</obj_property>
+         <obj_property name="ObjectShortName">nSimulationReset</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/PC_i/PC" type="array">
+      <obj_property name="ElementShortName">PC[15:0]</obj_property>
+      <obj_property name="ObjectShortName">PC[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/IR" type="array">
+      <obj_property name="ElementShortName">IR[15:0]</obj_property>
+      <obj_property name="ObjectShortName">IR[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/RAM" type="array">
+      <obj_property name="ElementShortName">RAM[0:4095][7:0]</obj_property>
+      <obj_property name="ObjectShortName">RAM[0:4095][7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/RegisterFile" type="array">
+      <obj_property name="ElementShortName">RegisterFile[0:31][7:0]</obj_property>
+      <obj_property name="ObjectShortName">RegisterFile[0:31][7:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject type="divider" fp_name="divider8910">
+      <obj_property name="label">Modules</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject fp_name="group4196" type="group">
+      <obj_property name="label">ProgramMemory</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TinyAVR_TB/UUT/PM_i/ProgramAddress" type="array">
+         <obj_property name="ElementShortName">ProgramAddress[15:0]</obj_property>
+         <obj_property name="ObjectShortName">ProgramAddress[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/PM_i/ProgramData" type="array">
+         <obj_property name="ElementShortName">ProgramData[15:0]</obj_property>
+         <obj_property name="ObjectShortName">ProgramData[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/PM_i/Memory" type="array">
+         <obj_property name="ElementShortName">Memory[0:31][15:0]</obj_property>
+         <obj_property name="ObjectShortName">Memory[0:31][15:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group8909" type="group">
+      <obj_property name="label">PC</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/PC_i/Clock" type="logic">
+         <obj_property name="ElementShortName">Clock</obj_property>
+         <obj_property name="ObjectShortName">Clock</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/PC_i/nReset" type="logic">
+         <obj_property name="ElementShortName">nReset</obj_property>
+         <obj_property name="ObjectShortName">nReset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/PC_i/Mode" type="array">
+         <obj_property name="ElementShortName">Mode[1:0]</obj_property>
+         <obj_property name="ObjectShortName">Mode[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/PC_i/Addr_Offset" type="array">
+         <obj_property name="ElementShortName">Addr_Offset[11:0]</obj_property>
+         <obj_property name="ObjectShortName">Addr_Offset[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/PC_i/Z" type="array">
+         <obj_property name="ElementShortName">Z[15:0]</obj_property>
+         <obj_property name="ObjectShortName">Z[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/PC_i/Addr" type="array">
+         <obj_property name="ElementShortName">Addr[15:0]</obj_property>
+         <obj_property name="ObjectShortName">Addr[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/PC_i/Prog_Addr" type="array">
+         <obj_property name="ElementShortName">Prog_Addr[15:0]</obj_property>
+         <obj_property name="ObjectShortName">Prog_Addr[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/PC_i/Prog_Mem" type="array">
+         <obj_property name="ElementShortName">Prog_Mem[15:0]</obj_property>
+         <obj_property name="ObjectShortName">Prog_Mem[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/PC_i/IR" type="array">
+         <obj_property name="ElementShortName">IR[15:0]</obj_property>
+         <obj_property name="ObjectShortName">IR[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/PC_i/PC" type="array">
+         <obj_property name="ElementShortName">PC[15:0]</obj_property>
+         <obj_property name="ObjectShortName">PC[15:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group11" type="group">
+      <obj_property name="label">Instruction Decoder</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/Clock" type="logic">
+         <obj_property name="ElementShortName">Clock</obj_property>
+         <obj_property name="ObjectShortName">Clock</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/nReset" type="logic">
+         <obj_property name="ElementShortName">nReset</obj_property>
+         <obj_property name="ObjectShortName">nReset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/IR" type="array">
+         <obj_property name="ElementShortName">IR[15:0]</obj_property>
+         <obj_property name="ObjectShortName">IR[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/ALU_Operation" type="array">
+         <obj_property name="ElementShortName">ALU_Operation[4:0]</obj_property>
+         <obj_property name="ObjectShortName">ALU_Operation[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/ALU_Sel" type="array">
+         <obj_property name="ElementShortName">ALU_Sel[1:0]</obj_property>
+         <obj_property name="ObjectShortName">ALU_Sel[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/T_Mask" type="array">
+         <obj_property name="ElementShortName">T_Mask[7:0]</obj_property>
+         <obj_property name="ObjectShortName">T_Mask[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/Register_Source" type="array">
+         <obj_property name="ElementShortName">Register_Source[1:0]</obj_property>
+         <obj_property name="ObjectShortName">Register_Source[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/DstReg_Addr" type="array">
+         <obj_property name="ElementShortName">DstReg_Addr[6:0]</obj_property>
+         <obj_property name="ObjectShortName">DstReg_Addr[6:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/RegD_Addr" type="array">
+         <obj_property name="ElementShortName">RegD_Addr[6:0]</obj_property>
+         <obj_property name="ObjectShortName">RegD_Addr[6:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/RegR_Addr" type="array">
+         <obj_property name="ElementShortName">RegR_Addr[6:0]</obj_property>
+         <obj_property name="ObjectShortName">RegR_Addr[6:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/Immediate" type="array">
+         <obj_property name="ElementShortName">Immediate[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Immediate[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/Register_WE" type="logic">
+         <obj_property name="ElementShortName">Register_WE</obj_property>
+         <obj_property name="ObjectShortName">Register_WE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/Register_Pair" type="logic">
+         <obj_property name="ElementShortName">Register_Pair</obj_property>
+         <obj_property name="ObjectShortName">Register_Pair</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/Offset_Addr" type="array">
+         <obj_property name="ElementShortName">Offset_Addr[1:0]</obj_property>
+         <obj_property name="ObjectShortName">Offset_Addr[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/UpdateX" type="logic">
+         <obj_property name="ElementShortName">UpdateX</obj_property>
+         <obj_property name="ObjectShortName">UpdateX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/UpdateY" type="logic">
+         <obj_property name="ElementShortName">UpdateY</obj_property>
+         <obj_property name="ObjectShortName">UpdateY</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/UpdateZ" type="logic">
+         <obj_property name="ElementShortName">UpdateZ</obj_property>
+         <obj_property name="ObjectShortName">UpdateZ</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/Memory_Data" type="array">
+         <obj_property name="ElementShortName">Memory_Data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Memory_Data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/Memory_WE" type="logic">
+         <obj_property name="ElementShortName">Memory_WE</obj_property>
+         <obj_property name="ObjectShortName">Memory_WE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/Memory_Enable" type="logic">
+         <obj_property name="ElementShortName">Memory_Enable</obj_property>
+         <obj_property name="ObjectShortName">Memory_Enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/Memory_Address" type="array">
+         <obj_property name="ElementShortName">Memory_Address[11:0]</obj_property>
+         <obj_property name="ObjectShortName">Memory_Address[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/Memory_Source" type="array">
+         <obj_property name="ElementShortName">Memory_Source[2:0]</obj_property>
+         <obj_property name="ObjectShortName">Memory_Source[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/PC" type="array">
+         <obj_property name="ElementShortName">PC[15:0]</obj_property>
+         <obj_property name="ObjectShortName">PC[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/PC_Addr" type="array">
+         <obj_property name="ElementShortName">PC_Addr[15:0]</obj_property>
+         <obj_property name="ObjectShortName">PC_Addr[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/PC_Mode" type="array">
+         <obj_property name="ElementShortName">PC_Mode[1:0]</obj_property>
+         <obj_property name="ObjectShortName">PC_Mode[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/PC_Offset" type="array">
+         <obj_property name="ElementShortName">PC_Offset[11:0]</obj_property>
+         <obj_property name="ObjectShortName">PC_Offset[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/StackPointerIn" type="array">
+         <obj_property name="ElementShortName">StackPointerIn[15:0]</obj_property>
+         <obj_property name="ObjectShortName">StackPointerIn[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/StackPointerOut" type="array">
+         <obj_property name="ElementShortName">StackPointerOut[15:0]</obj_property>
+         <obj_property name="ObjectShortName">StackPointerOut[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/SREG_Mask" type="array">
+         <obj_property name="ElementShortName">SREG_Mask[7:0]</obj_property>
+         <obj_property name="ObjectShortName">SREG_Mask[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/SREG" type="array">
+         <obj_property name="ElementShortName">SREG[7:0]</obj_property>
+         <obj_property name="ObjectShortName">SREG[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/ClockCycle" type="other">
+         <obj_property name="ElementShortName">ClockCycle</obj_property>
+         <obj_property name="ObjectShortName">ClockCycle</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/SecondCycle" type="logic">
+         <obj_property name="ElementShortName">SecondCycle</obj_property>
+         <obj_property name="ObjectShortName">SecondCycle</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/TwoWordInstruction" type="logic">
+         <obj_property name="ElementShortName">TwoWordInstruction</obj_property>
+         <obj_property name="ObjectShortName">TwoWordInstruction</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Ctrl_i/SRAM_SIZE" type="other">
+         <obj_property name="ElementShortName">SRAM_SIZE</obj_property>
+         <obj_property name="ObjectShortName">SRAM_SIZE</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group292" type="group">
+      <obj_property name="label">Register file</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/Clock" type="logic">
+         <obj_property name="ElementShortName">Clock</obj_property>
+         <obj_property name="ObjectShortName">Clock</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/nReset" type="logic">
+         <obj_property name="ElementShortName">nReset</obj_property>
+         <obj_property name="ObjectShortName">nReset</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/WE" type="logic">
+         <obj_property name="ElementShortName">WE</obj_property>
+         <obj_property name="ObjectShortName">WE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/Pair" type="logic">
+         <obj_property name="ElementShortName">Pair</obj_property>
+         <obj_property name="ObjectShortName">Pair</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/UpdateX" type="logic">
+         <obj_property name="ElementShortName">UpdateX</obj_property>
+         <obj_property name="ObjectShortName">UpdateX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/UpdateY" type="logic">
+         <obj_property name="ElementShortName">UpdateY</obj_property>
+         <obj_property name="ObjectShortName">UpdateY</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/UpdateZ" type="logic">
+         <obj_property name="ElementShortName">UpdateZ</obj_property>
+         <obj_property name="ObjectShortName">UpdateZ</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/DstReg_Addr" type="array">
+         <obj_property name="ElementShortName">DstReg_Addr[6:0]</obj_property>
+         <obj_property name="ObjectShortName">DstReg_Addr[6:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/RegD_Addr" type="array">
+         <obj_property name="ElementShortName">RegD_Addr[6:0]</obj_property>
+         <obj_property name="ObjectShortName">RegD_Addr[6:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/RegR_Addr" type="array">
+         <obj_property name="ElementShortName">RegR_Addr[6:0]</obj_property>
+         <obj_property name="ObjectShortName">RegR_Addr[6:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/Offset_Addr" type="array">
+         <obj_property name="ElementShortName">Offset_Addr[1:0]</obj_property>
+         <obj_property name="ObjectShortName">Offset_Addr[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/Source" type="array">
+         <obj_property name="ElementShortName">Source[1:0]</obj_property>
+         <obj_property name="ObjectShortName">Source[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/ALU" type="array">
+         <obj_property name="ElementShortName">ALU[7:0]</obj_property>
+         <obj_property name="ObjectShortName">ALU[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/Immediate" type="array">
+         <obj_property name="ElementShortName">Immediate[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Immediate[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/Memory" type="array">
+         <obj_property name="ElementShortName">Memory[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Memory[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/X" type="array">
+         <obj_property name="ElementShortName">X[15:0]</obj_property>
+         <obj_property name="ObjectShortName">X[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/Y" type="array">
+         <obj_property name="ElementShortName">Y[15:0]</obj_property>
+         <obj_property name="ObjectShortName">Y[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/Z" type="array">
+         <obj_property name="ElementShortName">Z[15:0]</obj_property>
+         <obj_property name="ObjectShortName">Z[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/RegD" type="array">
+         <obj_property name="ElementShortName">RegD[7:0]</obj_property>
+         <obj_property name="ObjectShortName">RegD[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/RegR" type="array">
+         <obj_property name="ElementShortName">RegR[7:0]</obj_property>
+         <obj_property name="ObjectShortName">RegR[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/RegisterFile" type="array">
+         <obj_property name="ElementShortName">RegisterFile[0:31][7:0]</obj_property>
+         <obj_property name="ObjectShortName">RegisterFile[0:31][7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/X_Temp" type="array">
+         <obj_property name="ElementShortName">X_Temp[15:0]</obj_property>
+         <obj_property name="ObjectShortName">X_Temp[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/Y_Temp" type="array">
+         <obj_property name="ElementShortName">Y_Temp[15:0]</obj_property>
+         <obj_property name="ObjectShortName">Y_Temp[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/Z_Temp" type="array">
+         <obj_property name="ElementShortName">Z_Temp[15:0]</obj_property>
+         <obj_property name="ObjectShortName">Z_Temp[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/REG_COUNT" type="other">
+         <obj_property name="ElementShortName">REG_COUNT</obj_property>
+         <obj_property name="ObjectShortName">REG_COUNT</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group299" type="group">
+      <obj_property name="label">ALU</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="group150" type="group">
+         <obj_property name="label">Mult</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/MultInst/Result_UU" type="array">
+            <obj_property name="ElementShortName">Result_UU[15:0]</obj_property>
+            <obj_property name="ObjectShortName">Result_UU[15:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/MultInst/Result_SS" type="array">
+            <obj_property name="ElementShortName">Result_SS[15:0]</obj_property>
+            <obj_property name="ObjectShortName">Result_SS[15:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/MultInst/Result_SU" type="array">
+            <obj_property name="ElementShortName">Result_SU[15:0]</obj_property>
+            <obj_property name="ObjectShortName">Result_SU[15:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/MultInst/Overflow" type="logic">
+            <obj_property name="ElementShortName">Overflow</obj_property>
+            <obj_property name="ObjectShortName">Overflow</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/MultInst/A" type="array">
+            <obj_property name="ElementShortName">A[7:0]</obj_property>
+            <obj_property name="ObjectShortName">A[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/MultInst/B" type="array">
+            <obj_property name="ElementShortName">B[7:0]</obj_property>
+            <obj_property name="ObjectShortName">B[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/MultInst/Operation" type="array">
+            <obj_property name="ElementShortName">Operation[4:0]</obj_property>
+            <obj_property name="ObjectShortName">Operation[4:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/MultInst/C" type="logic">
+            <obj_property name="ElementShortName">C</obj_property>
+            <obj_property name="ObjectShortName">C</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/MultInst/R" type="array">
+            <obj_property name="ElementShortName">R[7:0]</obj_property>
+            <obj_property name="ObjectShortName">R[7:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group759" type="group">
+         <obj_property name="label">Arithmetic</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticINst/A" type="array">
+            <obj_property name="ElementShortName">A[7:0]</obj_property>
+            <obj_property name="ObjectShortName">A[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticINst/B" type="array">
+            <obj_property name="ElementShortName">B[7:0]</obj_property>
+            <obj_property name="ObjectShortName">B[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticINst/CarryIn" type="logic">
+            <obj_property name="ElementShortName">CarryIn</obj_property>
+            <obj_property name="ObjectShortName">CarryIn</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticINst/Operation" type="array">
+            <obj_property name="ElementShortName">Operation[4:0]</obj_property>
+            <obj_property name="ObjectShortName">Operation[4:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticINst/H" type="logic">
+            <obj_property name="ElementShortName">H</obj_property>
+            <obj_property name="ObjectShortName">H</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticINst/V" type="logic">
+            <obj_property name="ElementShortName">V</obj_property>
+            <obj_property name="ObjectShortName">V</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticINst/C" type="logic">
+            <obj_property name="ElementShortName">C</obj_property>
+            <obj_property name="ObjectShortName">C</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticINst/R" type="array">
+            <obj_property name="ElementShortName">R[7:0]</obj_property>
+            <obj_property name="ObjectShortName">R[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticINst/Lower" type="array">
+            <obj_property name="ElementShortName">Lower[4:0]</obj_property>
+            <obj_property name="ObjectShortName">Lower[4:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticINst/Middle" type="array">
+            <obj_property name="ElementShortName">Middle[3:0]</obj_property>
+            <obj_property name="ObjectShortName">Middle[3:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticINst/Upper" type="array">
+            <obj_property name="ElementShortName">Upper[1:0]</obj_property>
+            <obj_property name="ObjectShortName">Upper[1:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group1096" type="group">
+         <obj_property name="label">Logic</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/LogicInst/Operation" type="array">
+            <obj_property name="ElementShortName">Operation[4:0]</obj_property>
+            <obj_property name="ObjectShortName">Operation[4:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/LogicInst/A" type="array">
+            <obj_property name="ElementShortName">A[7:0]</obj_property>
+            <obj_property name="ObjectShortName">A[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/LogicInst/B" type="array">
+            <obj_property name="ElementShortName">B[7:0]</obj_property>
+            <obj_property name="ObjectShortName">B[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/LogicInst/R" type="array">
+            <obj_property name="ElementShortName">R[7:0]</obj_property>
+            <obj_property name="ObjectShortName">R[7:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group1503" type="group">
+         <obj_property name="label">Shift</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ShiftInst/A" type="array">
+            <obj_property name="ElementShortName">A[7:0]</obj_property>
+            <obj_property name="ObjectShortName">A[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ShiftInst/CarryIn" type="logic">
+            <obj_property name="ElementShortName">CarryIn</obj_property>
+            <obj_property name="ObjectShortName">CarryIn</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ShiftInst/Operation" type="array">
+            <obj_property name="ElementShortName">Operation[4:0]</obj_property>
+            <obj_property name="ObjectShortName">Operation[4:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ShiftInst/V" type="logic">
+            <obj_property name="ElementShortName">V</obj_property>
+            <obj_property name="ObjectShortName">V</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ShiftInst/C" type="logic">
+            <obj_property name="ElementShortName">C</obj_property>
+            <obj_property name="ObjectShortName">C</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ShiftInst/R" type="array">
+            <obj_property name="ElementShortName">R[7:0]</obj_property>
+            <obj_property name="ObjectShortName">R[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ShiftInst/ShiftResult" type="array">
+            <obj_property name="ElementShortName">ShiftResult[7:0]</obj_property>
+            <obj_property name="ObjectShortName">ShiftResult[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ShiftInst/ShiftLeft" type="array">
+            <obj_property name="ElementShortName">ShiftLeft[7:0]</obj_property>
+            <obj_property name="ObjectShortName">ShiftLeft[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ShiftInst/ShiftRight" type="array">
+            <obj_property name="ElementShortName">ShiftRight[7:0]</obj_property>
+            <obj_property name="ObjectShortName">ShiftRight[7:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="group1075" type="group">
+         <obj_property name="label">Status</obj_property>
+         <obj_property name="DisplayName">label</obj_property>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/StatusInst/R" type="array">
+            <obj_property name="ElementShortName">R[7:0]</obj_property>
+            <obj_property name="ObjectShortName">R[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/StatusInst/H" type="logic">
+            <obj_property name="ElementShortName">H</obj_property>
+            <obj_property name="ObjectShortName">H</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/StatusInst/V" type="logic">
+            <obj_property name="ElementShortName">V</obj_property>
+            <obj_property name="ObjectShortName">V</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/StatusInst/C" type="logic">
+            <obj_property name="ElementShortName">C</obj_property>
+            <obj_property name="ObjectShortName">C</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/StatusInst/T" type="logic">
+            <obj_property name="ElementShortName">T</obj_property>
+            <obj_property name="ObjectShortName">T</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/StatusInst/SREGIn" type="array">
+            <obj_property name="ElementShortName">SREGIn[7:0]</obj_property>
+            <obj_property name="ObjectShortName">SREGIn[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/StatusInst/Mask" type="array">
+            <obj_property name="ElementShortName">Mask[7:0]</obj_property>
+            <obj_property name="ObjectShortName">Mask[7:0]</obj_property>
+         </wvobject>
+         <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/StatusInst/SREGOut" type="array">
+            <obj_property name="ElementShortName">SREGOut[7:0]</obj_property>
+            <obj_property name="ObjectShortName">SREGOut[7:0]</obj_property>
+         </wvobject>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/RegD" type="array">
+         <obj_property name="ElementShortName">RegD[7:0]</obj_property>
+         <obj_property name="ObjectShortName">RegD[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/RegR" type="array">
+         <obj_property name="ElementShortName">RegR[7:0]</obj_property>
+         <obj_property name="ObjectShortName">RegR[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/Immediate" type="array">
+         <obj_property name="ElementShortName">Immediate[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Immediate[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/Operation" type="array">
+         <obj_property name="ElementShortName">Operation[4:0]</obj_property>
+         <obj_property name="ObjectShortName">Operation[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/Sel" type="array">
+         <obj_property name="ElementShortName">Sel[1:0]</obj_property>
+         <obj_property name="ObjectShortName">Sel[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/T_Mask" type="array">
+         <obj_property name="ElementShortName">T_Mask[7:0]</obj_property>
+         <obj_property name="ObjectShortName">T_Mask[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/Mask" type="array">
+         <obj_property name="ElementShortName">Mask[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Mask[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/SREGIn" type="array">
+         <obj_property name="ElementShortName">SREGIn[7:0]</obj_property>
+         <obj_property name="ObjectShortName">SREGIn[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/SREGOut" type="array">
+         <obj_property name="ElementShortName">SREGOut[7:0]</obj_property>
+         <obj_property name="ObjectShortName">SREGOut[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/Result" type="array">
+         <obj_property name="ElementShortName">Result[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Result[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/OperandA" type="array">
+         <obj_property name="ElementShortName">OperandA[7:0]</obj_property>
+         <obj_property name="ObjectShortName">OperandA[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/OperandB" type="array">
+         <obj_property name="ElementShortName">OperandB[7:0]</obj_property>
+         <obj_property name="ObjectShortName">OperandB[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/T" type="logic">
+         <obj_property name="ElementShortName">T</obj_property>
+         <obj_property name="ObjectShortName">T</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/H" type="logic">
+         <obj_property name="ElementShortName">H</obj_property>
+         <obj_property name="ObjectShortName">H</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/V" type="logic">
+         <obj_property name="ElementShortName">V</obj_property>
+         <obj_property name="ObjectShortName">V</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/C" type="logic">
+         <obj_property name="ElementShortName">C</obj_property>
+         <obj_property name="ObjectShortName">C</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/R" type="array">
+         <obj_property name="ElementShortName">R[7:0]</obj_property>
+         <obj_property name="ObjectShortName">R[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticH" type="logic">
+         <obj_property name="ElementShortName">ArithmeticH</obj_property>
+         <obj_property name="ObjectShortName">ArithmeticH</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticV" type="logic">
+         <obj_property name="ElementShortName">ArithmeticV</obj_property>
+         <obj_property name="ObjectShortName">ArithmeticV</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticC" type="logic">
+         <obj_property name="ElementShortName">ArithmeticC</obj_property>
+         <obj_property name="ObjectShortName">ArithmeticC</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ArithmeticResult" type="array">
+         <obj_property name="ElementShortName">ArithmeticResult[7:0]</obj_property>
+         <obj_property name="ObjectShortName">ArithmeticResult[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/LogicResult" type="array">
+         <obj_property name="ElementShortName">LogicResult[7:0]</obj_property>
+         <obj_property name="ObjectShortName">LogicResult[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ShiftV" type="logic">
+         <obj_property name="ElementShortName">ShiftV</obj_property>
+         <obj_property name="ObjectShortName">ShiftV</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ShiftC" type="logic">
+         <obj_property name="ElementShortName">ShiftC</obj_property>
+         <obj_property name="ObjectShortName">ShiftC</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/ShiftResult" type="array">
+         <obj_property name="ElementShortName">ShiftResult[7:0]</obj_property>
+         <obj_property name="ObjectShortName">ShiftResult[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/MultiplicationC" type="logic">
+         <obj_property name="ElementShortName">MultiplicationC</obj_property>
+         <obj_property name="ObjectShortName">MultiplicationC</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/MultiplicationResult" type="array">
+         <obj_property name="ElementShortName">MultiplicationResult[7:0]</obj_property>
+         <obj_property name="ObjectShortName">MultiplicationResult[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/TResult" type="array">
+         <obj_property name="ElementShortName">TResult[7:0]</obj_property>
+         <obj_property name="ObjectShortName">TResult[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/SREGOut_Temp" type="array">
+         <obj_property name="ElementShortName">SREGOut_Temp[7:0]</obj_property>
+         <obj_property name="ObjectShortName">SREGOut_Temp[7:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group3062" type="group">
+      <obj_property name="label">SRAM</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/Source" type="array">
+         <obj_property name="ElementShortName">Source[2:0]</obj_property>
+         <obj_property name="ObjectShortName">Source[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/WE" type="logic">
+         <obj_property name="ElementShortName">WE</obj_property>
+         <obj_property name="ObjectShortName">WE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/Enable" type="logic">
+         <obj_property name="ElementShortName">Enable</obj_property>
+         <obj_property name="ObjectShortName">Enable</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/RAM" type="array">
+         <obj_property name="ElementShortName">RAM[0:4095][7:0]</obj_property>
+         <obj_property name="ObjectShortName">RAM[0:4095][7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/Address" type="array">
+         <obj_property name="ElementShortName">Address[11:0]</obj_property>
+         <obj_property name="ObjectShortName">Address[11:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/Data" type="array">
+         <obj_property name="ElementShortName">Data[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Data[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/StatusRegIn" type="array">
+         <obj_property name="ElementShortName">StatusRegIn[7:0]</obj_property>
+         <obj_property name="ObjectShortName">StatusRegIn[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/RegisterIn" type="array">
+         <obj_property name="ElementShortName">RegisterIn[7:0]</obj_property>
+         <obj_property name="ObjectShortName">RegisterIn[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/StatusRegOut" type="array">
+         <obj_property name="ElementShortName">StatusRegOut[7:0]</obj_property>
+         <obj_property name="ObjectShortName">StatusRegOut[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/StackPointerIn" type="array">
+         <obj_property name="ElementShortName">StackPointerIn[15:0]</obj_property>
+         <obj_property name="ObjectShortName">StackPointerIn[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/StackPointerOut" type="array">
+         <obj_property name="ElementShortName">StackPointerOut[15:0]</obj_property>
+         <obj_property name="ObjectShortName">StackPointerOut[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/X" type="array">
+         <obj_property name="ElementShortName">X[15:0]</obj_property>
+         <obj_property name="ObjectShortName">X[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/Y" type="array">
+         <obj_property name="ElementShortName">Y[15:0]</obj_property>
+         <obj_property name="ObjectShortName">Y[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/Z" type="array">
+         <obj_property name="ElementShortName">Z[15:0]</obj_property>
+         <obj_property name="ObjectShortName">Z[15:0]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>

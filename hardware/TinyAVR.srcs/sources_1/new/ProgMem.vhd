@@ -4,10 +4,10 @@
 -- 
 -- Create Date:         22.07.2020 19:04:49
 -- Design Name:         
--- Module Name:         PM - PM_Arch
+-- Module Name:         ProgMem - ProgMem_Arch
 -- Project Name:        TinyAVR
 -- Target Devices:      
--- Tool Versions:       Vivado 2020.1
+-- Tool Versions:       Vivado 2020.2
 -- Description:         Program memory for the TinyAVR microprocessor.
 --                      This design contains the compiled code for the TinyAVR microprocessor.
 -- 
@@ -36,13 +36,13 @@ use IEEE.NUMERIC_STD.ALL;
 library TinyAVR;
 use TinyAVR.Constants.all;
 
-entity PM is
+entity ProgMem is
     Port (  ProgramAddress      : in UNSIGNED(15 downto 0);                     -- Program memory address bus
             ProgramData         : out STD_LOGIC_VECTOR(15 downto 0)             -- Program memory data bus
             );
-end PM;
+end ProgMem;
 
-architecture PM_Arch of PM is
+architecture ProgMem_Arch of ProgMem is
 
     type ROM_t is array(0 to ((2 ** (PM_SIZE - 1)) - 1)) of STD_LOGIC_VECTOR(15 downto 0);
 
@@ -75,4 +75,4 @@ begin
 
     ProgramData <= Memory(to_integer(ProgramAddress));
 
-end PM_Arch;
+end ProgMem_Arch;
