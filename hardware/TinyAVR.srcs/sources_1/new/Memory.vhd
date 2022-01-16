@@ -4,11 +4,11 @@
 -- 
 -- Create Date:         22.07.2020 19:04:49
 -- Design Name:         
--- Module Name:         SRAM - SRAM_Arch
+-- Module Name:         Memory - Memory_Arch
 -- Project Name:        TinyAVR
 -- Target Devices:      
 -- Tool Versions:       Vivado 2020.2
--- Description:         SRAM module for the TinyAVR microprocessor.
+-- Description:         Memory module for the TinyAVR microprocessor.
 -- 
 -- Dependencies:        
 -- 
@@ -34,7 +34,7 @@ library TinyAVR;
 use TinyAVR.Constants.all;
 use TinyAVR.Opcodes.all;
 
-entity SRAM is
+entity Memory is
     Generic (   SRAM_SIZE   : INTEGER := 12                                     -- Address length of the SRAM in bit
             );
     Port (  Clock           : in STD_LOGIC;                                     -- Clock signal
@@ -59,11 +59,16 @@ entity SRAM is
             StackPointerOut : out STD_LOGIC_VECTOR(15 downto 0);                -- Stack pointer output
 
             -- Memory bus
-            Data            : inout STD_LOGIC_VECTOR(7 downto 0)
-            );
-end SRAM;
+            Data            : inout STD_LOGIC_VECTOR(7 downto 0);
 
-architecture SRAM_Arch of SRAM is
+            -- I/O controller register
+            Reg_PortB       : out STD_LOGIC_VECTOR(7 downto 0);                 --
+            Reg_PinB        : in STD_LOGIC_VECTOR(7 downto 0);                  --
+            Reg_DDRB        : out STD_LOGIC_VECTOR(7 downto 0)                  --
+            );
+end Memory;
+
+architecture Memory_Arch of Memory is
 
     type RAM_t is array(0 to ((2 ** SRAM_SIZE) - 1)) of STD_LOGIC_VECTOR(7 downto 0);
 
@@ -78,32 +83,37 @@ begin
                         (others => 'Z');
 
     StatusRegOut    <= RAM(16#3F#);
-
     StackPointerOut <= RAM(16#3E#) & RAM(16#3D#);
 
-    UpdateSRAM : process
+    WriteMemory_Proc : process
     begin
         wait until rising_edge(Clock);
 
-        if(Source = MEM_SREG) then
-            RAM(16#3F#) <= StatusRegIn;
-        elsif((Source = MEM_REG) and (WE = '1') and (Enable = '1')) then
-            RAM(to_integer(UNSIGNED(Address))) <= RegisterIn;
-        elsif((Source = MEM_SP) and (WE = '1') and (Enable = '1')) then
-            RAM(16#3E#) <= StackPointerIn(15 downto 8);
-            RAM(16#3D#) <= StackPointerIn(7 downto 0);
-        elsif((Source = MEM_MEMORY) and (WE = '1') and (Enable = '1')) then
-            RAM(to_integer(UNSIGNED(Address))) <= Data;
-        elsif((Source = MEM_X) and (WE = '1') and (Enable = '1')) then
-            RAM(to_integer(UNSIGNED(X))) <= RegisterIn;
-        elsif((Source = MEM_Y) and (WE = '1') and (Enable = '1')) then
-            RAM(to_integer(UNSIGNED(Y))) <= RegisterIn;
-        elsif((Source = MEM_Z) and (WE = '1') and (Enable = '1')) then
-            RAM(to_integer(UNSIGNED(Z))) <= RegisterIn;
+        if((WE = '1') and (Enable = '1')) then
+            case Source is
+                when MEM_SREG =>
+                    RAM(16#3F#) <= StatusRegIn;
+                when MEM_REG =>
+                    RAM(to_integer(UNSIGNED(Address))) <= RegisterIn;
+                when MEM_SP =>
+                    RAM(16#3E#) <= StackPointerIn(15 downto 8);
+                    RAM(16#3D#) <= StackPointerIn(7 downto 0);
+                when MEM_X =>
+                    RAM(to_integer(UNSIGNED(X))) <= RegisterIn;
+                when MEM_Y =>
+                    RAM(to_integer(UNSIGNED(Y))) <= RegisterIn;
+                when MEM_Z =>
+                    RAM(to_integer(UNSIGNED(Z))) <= RegisterIn;
+                when others =>
+                    case Address is
+                        when others =>
+                            RAM(to_integer(UNSIGNED(Address))) <= Data;
+                    end case;
+            end case;
         end if;
 
         if(nReset = '0') then
             RAM <= (others => (others => '0'));
         end if;
     end process;
-end SRAM_Arch;
+end Memory_Arch;

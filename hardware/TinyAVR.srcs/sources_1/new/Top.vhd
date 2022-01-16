@@ -40,10 +40,10 @@ entity Top is
     Port (  Clock           : in STD_LOGIC;                                     -- 
             nReset          : in STD_LOGIC;                                     -- Reset input (active low)
 
-            PortA           : out STD_LOGIC_VECTOR(7 downto 0);                 -- Port A output
-            PortB           : out STD_LOGIC_VECTOR(7 downto 0);                 -- Port B output
-            PortC           : out STD_LOGIC_VECTOR(7 downto 0);                 -- Port C output
-            PortD           : out STD_LOGIC_VECTOR(7 downto 0)                  -- Port D output
+            PortA           : inout STD_LOGIC_VECTOR(7 downto 0);               -- I/O Port A
+            PortB           : inout STD_LOGIC_VECTOR(7 downto 0);               -- I/O Port B
+            PortC           : inout STD_LOGIC_VECTOR(7 downto 0);               -- I/O Port C
+            PortD           : inout STD_LOGIC_VECTOR(7 downto 0)                -- I/O Port D
             );
 end Top;
 
@@ -66,6 +66,10 @@ architecture Top_Arch of Top is
 
     signal ProgramAddress  : UNSIGNED(15 downto 0);
     signal ProgramData     : STD_LOGIC_VECTOR(15 downto 0);
+
+    signal Reg_PortB        : STD_LOGIC_VECTOR(7 downto 0);
+    signal Reg_PinB         : STD_LOGIC_VECTOR(7 downto 0);
+    signal Reg_DDRB         : STD_LOGIC_VECTOR(7 downto 0);
 
     component ProgMem is
         Generic (   PM_SIZE     : INTEGER := 6 
@@ -98,7 +102,7 @@ architecture Top_Arch of Top is
                 );
     end component;
 
-    component SRAM is
+    component Memory is
         Generic (   SRAM_SIZE   : INTEGER := 12
                     );
         Port (  Clock           : in STD_LOGIC;
@@ -115,7 +119,23 @@ architecture Top_Arch of Top is
                 StackPointerIn  : in STD_LOGIC_VECTOR(15 downto 0);
                 StatusRegOut    : out STD_LOGIC_VECTOR(7 downto 0);
                 StackPointerOut : out STD_LOGIC_VECTOR(15 downto 0);
-                Data            : inout STD_LOGIC_VECTOR(7 downto 0)
+                Data            : inout STD_LOGIC_VECTOR(7 downto 0);
+                Reg_PortB       : out STD_LOGIC_VECTOR(7 downto 0);
+                Reg_PinB        : in STD_LOGIC_VECTOR(7 downto 0);
+                Reg_DDRB        : out STD_LOGIC_VECTOR(7 downto 0)
+                );
+    end component;
+
+    component IO_Controller is
+        Port (  Clock           : in STD_LOGIC;
+                nReset          : in STD_LOGIC;
+                PortA           : inout STD_LOGIC_VECTOR(7 downto 0);
+                PortB           : inout STD_LOGIC_VECTOR(7 downto 0);
+                PortC           : inout STD_LOGIC_VECTOR(7 downto 0);
+                PortD           : inout STD_LOGIC_VECTOR(7 downto 0);
+                Reg_PortB       : in STD_LOGIC_VECTOR(7 downto 0);
+                Reg_PinB        : out STD_LOGIC_VECTOR(7 downto 0);
+                Reg_DDRB        : in STD_LOGIC_VECTOR(7 downto 0)
                 );
     end component;
 
@@ -148,7 +168,7 @@ begin
                                                 StackPointerOut => StackPointerOut
                                                 );
 
-    SRAM_i      : component SRAM    generic map ( SRAM_SIZE => SRAM_SIZE
+    SRAM_i      : component Memory  generic map ( SRAM_SIZE => SRAM_SIZE
                                                   )
                                     port map (  Clock => Clock,
                                                 nReset => nReset,
@@ -164,7 +184,21 @@ begin
                                                 Z => SRAM_Z,
                                                 StackPointerIn => StackPointerIn,
                                                 StackPointerOut => StackPointerOut,
-                                                Data => SRAM_Data
+                                                Data => SRAM_Data,
+                                                Reg_PortB => Reg_PortB,
+                                                Reg_PinB => Reg_PinB,
+                                                Reg_DDRB => Reg_DDRB
                                                 );
+
+    IO_i        : component IO_Controller port map ( Clock => Clock,
+                                                     nReset => nReset,
+                                                     PortA => PortA,
+                                                     PortB => PortB,
+                                                     PortC => PortC,
+                                                     PortD => PortD,
+                                                     Reg_PortB => Reg_PortB,
+                                                     Reg_PinB => Reg_PinB,
+                                                     Reg_DDRB => Reg_DDRB
+                                                     );
 
 end Top_Arch;

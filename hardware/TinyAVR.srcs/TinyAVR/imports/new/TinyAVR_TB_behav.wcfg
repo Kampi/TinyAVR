@@ -12,15 +12,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="48666fs"></ZoomStartTime>
-      <ZoomEndTime time="340667fs"></ZoomEndTime>
-      <Cursor1Time time="209093fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="308001fs"></ZoomEndTime>
+      <Cursor1Time time="110706fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="207"></NameColumnWidth>
-      <ValueColumnWidth column_width="62"></ValueColumnWidth>
+      <NameColumnWidth column_width="191"></NameColumnWidth>
+      <ValueColumnWidth column_width="58"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="12" />
+   <WVObjectSize size="14" />
    <wvobject fp_name="group5" type="group">
       <obj_property name="label">Simulation input</obj_property>
       <obj_property name="DisplayName">label</obj_property>
@@ -31,6 +31,27 @@
       <wvobject fp_name="/TinyAVR_TB/nSimulationReset" type="logic">
          <obj_property name="ElementShortName">nSimulationReset</obj_property>
          <obj_property name="ObjectShortName">nSimulationReset</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group4538" type="group">
+      <obj_property name="label">I/O Ports</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/TinyAVR_TB/PortA" type="array">
+         <obj_property name="ElementShortName">PortA[7:0]</obj_property>
+         <obj_property name="ObjectShortName">PortA[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/PortB" type="array">
+         <obj_property name="ElementShortName">PortB[7:0]</obj_property>
+         <obj_property name="ObjectShortName">PortB[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/PortC" type="array">
+         <obj_property name="ElementShortName">PortC[7:0]</obj_property>
+         <obj_property name="ObjectShortName">PortC[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/PortD" type="array">
+         <obj_property name="ElementShortName">PortD[7:0]</obj_property>
+         <obj_property name="ObjectShortName">PortD[7:0]</obj_property>
       </wvobject>
    </wvobject>
    <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/PC_i/PC" type="array">
@@ -48,7 +69,6 @@
    <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/Register_i/RegisterFile" type="array">
       <obj_property name="ElementShortName">RegisterFile[0:31][7:0]</obj_property>
       <obj_property name="ObjectShortName">RegisterFile[0:31][7:0]</obj_property>
-      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject type="divider" fp_name="divider8910">
       <obj_property name="label">Modules</obj_property>
@@ -361,11 +381,9 @@
    <wvobject fp_name="group299" type="group">
       <obj_property name="label">ALU</obj_property>
       <obj_property name="DisplayName">label</obj_property>
-      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="group150" type="group">
          <obj_property name="label">Mult</obj_property>
          <obj_property name="DisplayName">label</obj_property>
-         <obj_property name="isExpanded"></obj_property>
          <wvobject fp_name="/TinyAVR_TB/UUT/Core_i/ALU_i/MultInst/Result_UU" type="array">
             <obj_property name="ElementShortName">Result_UU[15:0]</obj_property>
             <obj_property name="ObjectShortName">Result_UU[15:0]</obj_property>
@@ -665,8 +683,9 @@
       </wvobject>
    </wvobject>
    <wvobject fp_name="group3062" type="group">
-      <obj_property name="label">SRAM</obj_property>
+      <obj_property name="label">Memory</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/Source" type="array">
          <obj_property name="ElementShortName">Source[2:0]</obj_property>
          <obj_property name="ObjectShortName">Source[2:0]</obj_property>
@@ -722,6 +741,23 @@
       <wvobject fp_name="/TinyAVR_TB/UUT/SRAM_i/Z" type="array">
          <obj_property name="ElementShortName">Z[15:0]</obj_property>
          <obj_property name="ObjectShortName">Z[15:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group4539" type="group">
+      <obj_property name="label">IO-Controller</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/TinyAVR_TB/UUT/IO_i/Reg_PortB" type="array">
+         <obj_property name="ElementShortName">Reg_PortB[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Reg_PortB[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/IO_i/Reg_PinB" type="array">
+         <obj_property name="ElementShortName">Reg_PinB[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Reg_PinB[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TinyAVR_TB/UUT/IO_i/Reg_DDRB" type="array">
+         <obj_property name="ElementShortName">Reg_DDRB[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Reg_DDRB[7:0]</obj_property>
       </wvobject>
    </wvobject>
 </wave_config>

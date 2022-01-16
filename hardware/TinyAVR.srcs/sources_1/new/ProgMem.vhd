@@ -61,9 +61,9 @@ architecture ProgMem_Arch of ProgMem is
         return ROM;
     end function;
 
-    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Arith-Test.hex");
+    signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Arith-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Logic-Test.hex");
-    signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Mul-Test.hex");
+    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Mul-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Rol-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Subroutines/Call-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Bitmanipulation/Bitmanipulation.hex");

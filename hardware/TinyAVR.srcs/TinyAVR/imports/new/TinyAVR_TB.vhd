@@ -3,14 +3,14 @@
 -- Engineer:            Daniel Kampert
 -- 
 -- Create Date:         22.07.2020 19:04:49
--- Design Name: 
+-- Design Name:         
 -- Module Name:         TinyAVR_TB - TinyAVR_TB_Arch
 -- Project Name:        TinyAVR
--- Target Devices: 
+-- Target Devices:      
 -- Tool Versions:       Vivado 2020.2
 -- Description:         Testbench for the AVR microprocessor.
 -- 
--- Dependencies: 
+-- Dependencies:        
 -- 
 -- Revision:
 --  Revision            0.01 - File Created
@@ -36,24 +36,30 @@ end TinyAVR_TB;
 
 architecture TinyAVR_TB_Arch of TinyAVR_TB is
 
-    constant SRAM_SIZE      : INTEGER       := 12;
-    constant PM_SIZE        : INTEGER       := 6;
-    constant ClockPeriod    : TIME          := 8 ns;
+    constant SRAM_SIZE      : INTEGER                       := 12;
+    constant PM_SIZE        : INTEGER                       := 6;
+    constant ClockPeriod    : TIME                          := 8 ns;
 
     -- Simulation signals
-    signal SimulationClock  : STD_LOGIC     := '0';
-    signal nSimulationReset : STD_LOGIC     := '0';
+    signal SimulationClock  : STD_LOGIC                     := '0';
+    signal nSimulationReset : STD_LOGIC                     := '0';
+
+    -- I/O ports
+    signal PortA            : STD_LOGIC_VECTOR(7 downto 0)  := (others => '0');
+    signal PortB            : STD_LOGIC_VECTOR(7 downto 0)  := (others => '0');
+    signal PortC            : STD_LOGIC_VECTOR(7 downto 0)  := (others => '0');
+    signal PortD            : STD_LOGIC_VECTOR(7 downto 0)  := (others => '0');
 
     component Top is
-        Generic (   SRAM_SIZE   : INTEGER                               := 12;
-                    PM_SIZE     : INTEGER                               := 6
+        Generic (   SRAM_SIZE   : INTEGER                   := 12;
+                    PM_SIZE     : INTEGER                   := 6
                     );
         Port (  Clock           : in STD_LOGIC;
                 nReset          : in STD_LOGIC;
-                PortA           : out STD_LOGIC_VECTOR(7 downto 0);
-                PortB           : out STD_LOGIC_VECTOR(7 downto 0);
-                PortC           : out STD_LOGIC_VECTOR(7 downto 0);
-                PortD           : out STD_LOGIC_VECTOR(7 downto 0)
+                PortA           : inout STD_LOGIC_VECTOR(7 downto 0);
+                PortB           : inout STD_LOGIC_VECTOR(7 downto 0);
+                PortC           : inout STD_LOGIC_VECTOR(7 downto 0);
+                PortD           : inout STD_LOGIC_VECTOR(7 downto 0)
                 );
     end component;
 
@@ -63,11 +69,16 @@ begin
                             PM_SIZE => PM_SIZE
                             )
               port map (  Clock => SimulationClock,
-                          nReset => nSimulationReset
+                          nReset => nSimulationReset,
+                          PortA => PortA,
+                          PortB => PortB,
+                          PortC => PortC,
+                          PortD => PortD
                           );
 
-    -- Input clock generation
-    process begin
+    -- Clock generation
+    Clock_Proc : process
+    begin
         wait for (ClockPeriod / 2);
         SimulationClock <= '1';
         wait for (ClockPeriod / 2);
@@ -75,9 +86,13 @@ begin
     end process;
 
     -- Stimulus
-    process begin
+    Stim_Proc : process
+    begin
         wait for 10 ns;
         nSimulationReset <= '1';
+        wait for 100 ns;
+        PortB <= "01010101";
         wait;
     end process;
+
 end TinyAVR_TB_Arch;
