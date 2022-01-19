@@ -61,17 +61,21 @@ architecture ProgMem_Arch of ProgMem is
         return ROM;
     end function;
 
-    signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Arith-Test.hex");
+    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Mov-Test.hex");
+    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Arith-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Logic-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Mul-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/ALU/Rol-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Subroutines/Call-Test.hex");
-    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Bitmanipulation/Bitmanipulation.hex");
+    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Jump/IJump-Test.hex");
+    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Jump/RJump-Test.hex");
+    --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Bitmanipulation/SREG.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Bitmanipulation/CBI_SBI.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Branch/Branch-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/SRAM/ST_LD_X-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/SRAM/ST_LD_Y-Test.hex");
     --signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/SRAM/ST_LD_Z-Test.hex");
+    signal Memory : ROM_t := InitROMFromFile("../../../../software/AVRASM/Applications/SimpleMain.hex");
 
 begin
 

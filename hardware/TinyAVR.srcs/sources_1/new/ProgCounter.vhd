@@ -40,8 +40,7 @@ entity ProgCounter is
             nReset          : in STD_LOGIC;                                 -- Reset (active low)
             Mode            : in PC_Mode_t;                                 -- Update source for the Programm Counter
 
-            Addr_Offset     : in SIGNED(11 downto 0);                       -- Address offset for the Programm Counter
-            Z               : in STD_LOGIC_VECTOR(15 downto 0);             -- Address input from Z register
+            Z               : in UNSIGNED(15 downto 0);                     -- Address input from Z register
             Addr            : in UNSIGNED(15 downto 0);                     -- Address input for the Program Counter
 
             Prog_Addr       : out UNSIGNED(15 downto 0);                    -- Programm address output
@@ -67,10 +66,10 @@ begin
 
         case Mode is
             when PC_INC =>
-                PC <= UNSIGNED(to_unsigned(to_integer(SIGNED(PC)) + to_integer(Addr_Offset), PC'length));
+                PC <= PC + 1;
 
             when PC_Z_REG =>
-                PC <= UNSIGNED(Z);
+                PC <= Z;
 
             when PC_KEEP =>
                 PC <= PC;

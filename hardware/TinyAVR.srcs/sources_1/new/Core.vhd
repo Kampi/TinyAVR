@@ -36,23 +36,37 @@ use TinyAVR.Constants.all;
 entity Core is
     Generic (   SRAM_SIZE   : INTEGER := 12
                 );
-    Port (  Clock           : in STD_LOGIC;
-            nReset          : in STD_LOGIC;
+    Port (  Clock           : in STD_LOGIC;                                     --
+            nReset          : in STD_LOGIC;                                     --
+            IRQ             : in STD_LOGIC;                                     -- Interrupt request
+
+            -- Control signals
+            Pair            : out STD_LOGIC;                                    -- Use a register pair instead of a single register
+            UpdateX         : out STD_LOGIC;                                    -- Update the X Register pair with the offset address
+            UpdateY         : out STD_LOGIC;                                    -- Update the Y Register pair with the offset address
+            UpdateZ         : out STD_LOGIC;                                    -- Update the Z Register pair with the offset address
 
             -- Program memory interface
-            Prog_Addr       : out UNSIGNED(15 downto 0);
-            Prog_Mem        : in STD_LOGIC_VECTOR(15 downto 0);
+            Prog_Addr       : out UNSIGNED(15 downto 0);                        --
+            Prog_Mem        : in STD_LOGIC_VECTOR(15 downto 0);                 --
+
+            DstReg_Addr     : out UNSIGNED(6 downto 0);                         -- Destination register address
+            RegD_Addr       : out UNSIGNED(6 downto 0);                         -- Register D address
+            RegR_Addr       : out UNSIGNED(6 downto 0);                         -- Register R address
+            Offset_Addr     : out SIGNED(1 downto 0);                           -- Offset address for the indirect address mode
+            Z               : in UNSIGNED(15 downto 0);                         -- Z Register address
+
+            RegD            : in STD_LOGIC_VECTOR(7 downto 0);                  -- Register D input
+            RegR            : in STD_LOGIC_VECTOR(7 downto 0);                  -- Register R input
+            Immediate       : out STD_LOGIC_VECTOR(7 downto 0);                 -- Immediate value from Program memory
+            ALU_Result      : out STD_LOGIC_VECTOR(7 downto 0);                 -- Result from ALU
 
             -- SRAM interface
+            Enable          : out STD_LOGIC;                                    -- Enable the SRAM
+            WE              : out STD_LOGIC;                                    -- Enable write to the SRAM
             SRAM_Source     : out Sram_Source_t;
-            SRAM_WE         : out STD_LOGIC;
-            SRAM_Enable     : out STD_LOGIC;
-            SRAM_X          : out STD_LOGIC_VECTOR(15 downto 0);
-            SRAM_Y          : out STD_LOGIC_VECTOR(15 downto 0);
-            SRAM_Z          : out STD_LOGIC_VECTOR(15 downto 0);
             SRAM_Data       : inout STD_LOGIC_VECTOR(7 downto 0);
-            SRAM_Address    : out STD_LOGIC_VECTOR((SRAM_SIZE - 1) downto 0);
-            SRAM_RegD       : out STD_LOGIC_VECTOR(7 downto 0);
+            SRAM_Address    : out UNSIGNED((SRAM_SIZE - 1) downto 0);
             SRAM_Status     : out STD_LOGIC_VECTOR(7 downto 0);
             SRAM_SREG       : in STD_LOGIC_VECTOR(7 downto 0);
             StackPointerIn  : out STD_LOGIC_VECTOR(15 downto 0);
@@ -62,28 +76,12 @@ end Core;
 
 architecture Core_Arch of Core is
 
-    signal RegisterWE           : STD_LOGIC;
-    signal Pair                 : STD_LOGIC;
-    signal UpdateX              : STD_LOGIC;
-    signal UpdateY              : STD_LOGIC;
-    signal UpdateZ              : STD_LOGIC;
+    signal Immediate_Temp       : STD_LOGIC_VECTOR(7 downto 0)          := (others => '0');
 
-    signal X                    : STD_LOGIC_VECTOR(15 downto 0);
-    signal Y                    : STD_LOGIC_VECTOR(15 downto 0);
-    signal Z                    : STD_LOGIC_VECTOR(15 downto 0);
     signal IR                   : STD_LOGIC_VECTOR(15 downto 0);
     signal T_Mask               : STD_LOGIC_VECTOR(7 downto 0);
-    signal Immediate            : STD_LOGIC_VECTOR(7 downto 0);
-    signal RegD                 : STD_LOGIC_VECTOR(7 downto 0);
-    signal RegR                 : STD_LOGIC_VECTOR(7 downto 0);
     signal ALU_Status           : STD_LOGIC_VECTOR(7 downto 0);
-    signal ALU_Out              : STD_LOGIC_VECTOR(7 downto 0);
-    signal DstReg_Addr          : STD_LOGIC_VECTOR(6 downto 0);
-    signal RegD_Addr            : STD_LOGIC_VECTOR(6 downto 0);
-    signal RegR_Addr            : STD_LOGIC_VECTOR(6 downto 0);
 
-    signal Offset_Addr          : SIGNED(1 downto 0);
-    signal PC_Offset            : SIGNED(11 downto 0);
     signal PC                   : UNSIGNED(15 downto 0);
     signal PC_Addr              : UNSIGNED(15 downto 0);
 
@@ -97,36 +95,11 @@ architecture Core_Arch of Core is
         Port (  Clock           : in STD_LOGIC;
                 nReset          : in STD_LOGIC;
                 Mode            : in PC_Mode_t;
-                Addr_Offset     : in SIGNED(11 downto 0);
-                Z               : in STD_LOGIC_VECTOR(15 downto 0);
+                Z               : in UNSIGNED(15 downto 0);
                 Addr            : in UNSIGNED(15 downto 0);
                 Prog_Addr       : out UNSIGNED(15 downto 0);
                 Prog_Mem        : in STD_LOGIC_VECTOR(15 downto 0);
                 IR              : out STD_LOGIC_VECTOR(15 downto 0)
-                );
-    end component;
-
-    component RegisterFile is
-        Port (  Clock           : in STD_LOGIC;
-                nReset          : in STD_LOGIC;
-                WE              : in STD_LOGIC;
-                Pair            : in STD_LOGIC;
-                UpdateX         : in STD_LOGIC;
-                UpdateY         : in STD_LOGIC;
-                UpdateZ         : in STD_LOGIC;
-                DstReg_Addr     : in STD_LOGIC_VECTOR(6 downto 0);
-                RegD_Addr       : in STD_LOGIC_VECTOR(6 downto 0);
-                RegR_Addr       : in STD_LOGIC_VECTOR(6 downto 0);
-                Offset_Addr     : in SIGNED(1 downto 0);
-                Source          : in Reg_Source_t;
-                ALU             : in STD_LOGIC_VECTOR(7 downto 0);
-                Immediate       : in STD_LOGIC_VECTOR(7 downto 0);
-                Memory          : in STD_LOGIC_VECTOR(7 downto 0);
-                X               : out STD_LOGIC_VECTOR(15 downto 0);
-                Y               : out STD_LOGIC_VECTOR(15 downto 0);
-                Z               : out STD_LOGIC_VECTOR(15 downto 0);
-                RegD            : out STD_LOGIC_VECTOR(7 downto 0);
-                RegR            : out STD_LOGIC_VECTOR(7 downto 0)
                 );
     end component;
 
@@ -149,17 +122,17 @@ architecture Core_Arch of Core is
                     );
         Port (  Clock           : in STD_LOGIC;
                 nReset          : in STD_LOGIC;
+                IRQ             : in STD_LOGIC;
                 IR              : in STD_LOGIC_VECTOR(15 downto 0);
+                Pair            : out STD_LOGIC;
                 ALU_Operation   : out ALU_Op_t;
                 ALU_Sel         : out ALU_Src_t;
                 T_Mask          : out STD_LOGIC_VECTOR(7 downto 0);
-                Register_Source : out Reg_Source_t;
-                DstReg_Addr     : out STD_LOGIC_VECTOR(6 downto 0);
-                RegD_Addr       : out STD_LOGIC_VECTOR(6 downto 0);
-                RegR_Addr       : out STD_LOGIC_VECTOR(6 downto 0);
                 Immediate       : out STD_LOGIC_VECTOR(7 downto 0);
-                Register_WE     : out STD_LOGIC;
-                Register_Pair   : out STD_LOGIC;
+                Register_Source : out Reg_Source_t;
+                DstReg_Addr     : out UNSIGNED(6 downto 0);
+                RegD_Addr       : out UNSIGNED(6 downto 0);
+                RegR_Addr       : out UNSIGNED(6 downto 0);
                 Offset_Addr     : out SIGNED(1 downto 0);
                 UpdateX         : out STD_LOGIC;
                 UpdateY         : out STD_LOGIC;
@@ -167,7 +140,7 @@ architecture Core_Arch of Core is
                 Memory_Data     : inout STD_LOGIC_VECTOR(7 downto 0);
                 Memory_WE       : out STD_LOGIC;
                 Memory_Enable   : out STD_LOGIC;
-                Memory_Address  : out STD_LOGIC_VECTOR((SRAM_SIZE - 1) downto 0);
+                Memory_Address  : out UNSIGNED((SRAM_SIZE - 1) downto 0);
                 Memory_Source   : out Sram_Source_t;
                 SREG_Mask       : out Bit_Mask_t;
                 SREG            : in STD_LOGIC_VECTOR(7 downto 0);
@@ -175,8 +148,7 @@ architecture Core_Arch of Core is
                 StackPointerOut : out STD_LOGIC_VECTOR(15 downto 0);
                 PC              : in UNSIGNED(15 downto 0);
                 PC_Addr         : out UNSIGNED(15 downto 0);
-                PC_Mode         : out PC_Mode_t;
-                PC_Offset       : out SIGNED(11 downto 0)
+                PC_Mode         : out PC_Mode_t
                 );
     end component;
 
@@ -187,32 +159,9 @@ begin
                                                     Prog_Mem => Prog_Mem,
                                                     IR => IR,
                                                     Mode => PC_Mode,
-                                                    Addr_Offset => PC_Offset,
                                                     Addr => PC_Addr,
                                                     Z => Z,
                                                     Prog_Addr => PC
-                                                    );
-
-    Register_i  : component RegisterFile port map ( Clock => Clock,
-                                                    nReset => nReset,
-                                                    WE => RegisterWE,
-                                                    Pair => Pair,
-                                                    UpdateX => UpdateX,
-                                                    UpdateY => UpdateY,
-                                                    UpdateZ => UpdateZ,
-                                                    DstReg_Addr => DstReg_Addr,
-                                                    RegD_Addr => RegD_Addr,
-                                                    RegR_Addr => RegR_Addr,
-                                                    Offset_Addr => Offset_Addr,
-                                                    Source => Register_Source,
-                                                    ALU => ALU_Out,
-                                                    Immediate => Immediate,
-                                                    Memory => SRAM_Data,
-                                                    RegD => RegD,
-                                                    RegR => RegR,
-                                                    X => X,
-                                                    Y => Y,
-                                                    Z => Z
                                                     );
 
     ALU_i       : component ALU port map (  Operation => ALU_Operation,
@@ -222,8 +171,8 @@ begin
                                             Mask => SREG_Mask,
                                             RegD => RegD,
                                             RegR => RegR,
-                                            Immediate => Immediate,
-                                            Result => ALU_Out,
+                                            Immediate => Immediate_Temp,
+                                            Result => ALU_Result,
                                             SREGOut => ALU_Status
                                             );
 
@@ -231,9 +180,9 @@ begin
                                                              )
                                                port map (   Clock => Clock,
                                                             nReset => nReset,
+                                                            IRQ => IRQ,
                                                             IR => IR,
-                                                            Register_WE => RegisterWE, 
-                                                            Register_Pair => Pair,
+                                                            Pair => Pair,
                                                             Offset_Addr => Offset_Addr,
                                                             UpdateX => UpdateX,
                                                             UpdateY => UpdateY,
@@ -241,20 +190,19 @@ begin
                                                             DstReg_Addr => DstReg_Addr,
                                                             RegD_Addr => RegD_Addr,
                                                             RegR_Addr => RegR_Addr,
-                                                            Immediate => Immediate,
-                                                            Register_Source => Register_Source,
+                                                            Immediate => Immediate_Temp,
+                                                            Register_Source => Register_Source, -- <- Kann weg
                                                             T_Mask => T_Mask,
                                                             ALU_Sel => ALU_Sel,
                                                             ALU_Operation => ALU_Operation,
                                                             PC => PC,
                                                             PC_Addr => PC_Addr,
                                                             PC_Mode => PC_Mode,
-                                                            PC_Offset => PC_Offset,
                                                             SREG_Mask => SREG_Mask,
                                                             SREG => SRAM_SREG,
                                                             Memory_Data => SRAM_Data,
-                                                            Memory_WE => SRAM_WE,
-                                                            Memory_Enable => SRAM_Enable,
+                                                            Memory_WE => WE,
+                                                            Memory_Enable => Enable,
                                                             Memory_Address => SRAM_Address,
                                                             Memory_Source => SRAM_Source,
                                                             StackPointerIn => StackPointerOut,
@@ -262,10 +210,7 @@ begin
                                                             );
 
     SRAM_Status <= ALU_Status;
-    SRAM_RegD <= RegD;
-    SRAM_X <= X;
-    SRAM_Y <= Y;
-    SRAM_Z <= Z;
     Prog_Addr <= PC;
+    Immediate <= Immediate_Temp;
 
 end Core_Arch;

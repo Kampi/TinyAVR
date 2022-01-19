@@ -12,7 +12,7 @@
             "console": "integratedTerminal",
             "args": [
                 "-i" "D:/Downloads/AssemblerApplication1/AssemblerApplication1/Debug/AssemblerApplication1.hex"
-                "-o" "Mul-Test.hex"
+                "-o" "Call-Test.hex"
                 "-d"
             ]
         }

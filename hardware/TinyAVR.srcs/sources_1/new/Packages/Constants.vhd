@@ -7,7 +7,7 @@
 -- Package Name:        Constants
 -- Project Name:        TinyAVR
 -- Target Devices:      
--- Tool Versions:       Vivado 2020.1
+-- Tool Versions:       Vivado 2020.2
 -- Description:         Constants for the TinyAVR microprocessor.
 -- 
 -- Dependencies:        
@@ -27,11 +27,13 @@ package Constants is
     subtype PC_Mode_t       is STD_LOGIC_VECTOR(1 downto 0);                        -- Program Counter modes
     subtype ALU_Src_t       is STD_LOGIC_VECTOR(1 downto 0);                        -- Input sources for the ALU
     subtype ALU_Op_t        is STD_LOGIC_VECTOR(4 downto 0);                        -- ALU operation code
-    subtype Sram_Source_t   is STD_LOGIC_VECTOR(2 downto 0);                        -- SRAM data sources
+    subtype Sram_Source_t   is STD_LOGIC_VECTOR(3 downto 0);                        -- SRAM data sources
     subtype Bit_Mask_t      is STD_LOGIC_VECTOR(7 downto 0);                        -- Bit level mask for the bit operations
     subtype Set_Opt_t       is STD_LOGIC;                                           -- Clear / Set flag for bit mask operations
     subtype Write_Opt_t     is STD_LOGIC;                                           -- Write / Lock options for individual status bits
     subtype Stack_Mode_t    is STD_LOGIC;                                           -- Stack pointer counting modes
+
+    constant REG_COUNT              : INTEGER           := 32;                      -- Number of general purpose register
 
     -- Program Counter address modes
     constant PC_INC                 :   PC_Mode_t       := "00";                    -- Increment the address of the Program Counter by the given offset
@@ -39,20 +41,21 @@ package Constants is
     constant PC_KEEP                :   PC_Mode_t       := "10";                    -- Don´t increment the Program Counter
     constant PC_SET                 :   PC_Mode_t       := "11";                    -- Set the Program Counter to a given address
 
-    -- SRAM address sources
-    constant MEM_MEMORY             :   Sram_Source_t   := "000";                   -- Update from SRAM
-    constant MEM_SREG               :   Sram_Source_t   := "001";                   -- Update from SREG
-    constant MEM_REG                :   Sram_Source_t   := "010";                   -- Update from Register
-    constant MEM_SP                 :   Sram_Source_t   := "011";                   -- Update from Stack Pointer
-    constant MEM_X                  :   Sram_Source_t   := "100";                   -- Update from Register with X Register as address
-    constant MEM_Y                  :   Sram_Source_t   := "101";                   -- Update from Register with Y Register as address
-    constant MEM_Z                  :   Sram_Source_t   := "110";                   -- Update from Register with Z Register as address
+    -- SRAM update sources
+    constant MEM_MEMORY             :   Sram_Source_t   := "0000";                  -- Update from SRAM
+    constant MEM_SREG               :   Sram_Source_t   := "0001";                  -- Update from SREG
+    constant MEM_REG                :   Sram_Source_t   := "0010";                  -- Update from Register
+    constant MEM_SP                 :   Sram_Source_t   := "0011";                  -- Update from Stack Pointer
+    constant MEM_X                  :   Sram_Source_t   := "0100";                  -- Update from Register with X Register as address
+    constant MEM_Y                  :   Sram_Source_t   := "0101";                  -- Update from Register with Y Register as address
+    constant MEM_Z                  :   Sram_Source_t   := "0110";                  -- Update from Register with Z Register as address
+    constant MEM_IMMEDIATE          :   Sram_Source_t   := "0111";                  -- Update from Immediate value
+    constant MEM_ALU                :   Sram_Source_t   := "1000";                  -- Update from ALU and SREG
+    constant MEM_IN                 :   Sram_Source_t   := "1001";                  -- Update a register from the SRAM
+    constant MEM_OUT                :   Sram_Source_t   := "1010";                  -- Update the SRAM from a register
 
     -- Input data sources
-    constant SRC_ALU                :   Reg_Source_t    := "00";                    -- Use the ALU output as data source
     constant SRC_MEMORY             :   Reg_Source_t    := "01";                    -- Use the SRAM output as data source
-    constant SRC_IMMEDIATE          :   Reg_Source_t    := "10";                    -- Use a immediate value as data source
-    constant SRC_REGISTER           :   Reg_Source_t    := "11";                    -- Use the register file as data source
 
     -- Second data source for ALU
     constant ALU_SRC_REG            :   ALU_Src_t       := "00";                    -- Register R as data source
